@@ -603,7 +603,7 @@ function startAnalysis() {
             <div class="tc-msg">
                 <div class="tc-msg-line"><strong style="color:var(--gold);">📌 올해의 방향 (${py}번):</strong> ${cs.goal}</div>
                 <div class="tc-msg-line"><strong style="color:var(--teal);">⚡ 지금 바로 할 행동:</strong> ${cs.action}</div>
-                <div class="tc-final">✦ 이 모든 흐름 속에서 당신의 핵심 과제는 <strong style="color:var(--gold);">${curCNum}번 · ${curCD.name}</strong>의 균형입니다. ${reportParas[1] ? `<em style="color:#c5bde0;">"${reportParas[1]}"</em>` : ""}</div>
+                <div class="tc-final">✦ 이 모든 흐름 속에서 당신의 핵심 과제는 <strong style="color:var(--gold);">${curCNum}번 · ${curCD.name}</strong>의 균형입니다. ${prescKeyword ? `<em style="color:#c5bde0;">지금 필요한 것: 「${prescKeyword}」</em>` : ""}</div>
             </div>
         </div>`);
 
