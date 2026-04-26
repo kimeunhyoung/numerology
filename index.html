@@ -212,6 +212,45 @@
         .cycle-deep-report { background: rgba(14,17,31,0.96); border: 1px solid rgba(217,177,111,0.15); padding:10px 12px; border-radius:10px; margin-top:8px; display:block; text-align:left; }
         .deep-prompt-container { margin-top:6px; }
 
+        /* ── 인생 단계 프로그레스 바 ── */
+        .stage-progress-wrap { margin:10px 0 14px; padding:12px 14px; background:rgba(20,24,42,0.92); border-radius:10px; border:1px solid var(--glass-border); }
+        .stage-progress-bar { display:flex; align-items:flex-start; margin-bottom:8px; }
+        .stage-step { display:flex; flex-direction:column; align-items:center; flex:1; }
+        .step-dot { width:26px; height:26px; border-radius:50%; border:2px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; color:var(--muted); background:rgba(15,18,32,0.9); flex-shrink:0; transition:0.3s; }
+        .stage-step.done .step-dot { background:rgba(125,224,208,0.15); border-color:var(--teal); color:var(--teal); }
+        .stage-step.active .step-dot { background:rgba(217,177,111,0.25); border-color:var(--gold); color:var(--gold); box-shadow:0 0 10px rgba(217,177,111,0.35); transform:scale(1.15); }
+        .step-label { font-size:0.6rem; color:var(--muted); text-align:center; margin-top:5px; line-height:1.3; }
+        .stage-step.active .step-label { color:var(--gold); font-weight:700; }
+        .stage-step.done .step-label { color:var(--teal); }
+        .step-line-wrap { flex:1; display:flex; align-items:center; padding-bottom:18px; }
+        .step-line { height:2px; width:100%; background:rgba(255,255,255,0.07); transition:0.3s; }
+        .step-line.done { background:linear-gradient(90deg,var(--teal),rgba(125,224,208,0.3)); }
+        .stage-progress-msg { font-size:0.82rem; color:var(--text); text-align:center; padding-top:7px; border-top:1px solid rgba(255,255,255,0.06); }
+
+        /* ── 인생 스토리텔링 리포트 ── */
+        .story-report { background:linear-gradient(160deg,rgba(20,24,42,0.97),rgba(28,18,46,0.95)); border:1px solid var(--glass-border); border-radius:12px; padding:14px; margin-bottom:12px; }
+        .story-title { font-size:0.85rem; font-weight:700; color:var(--gold); margin-bottom:12px; padding-bottom:7px; border-bottom:1px solid rgba(217,177,111,0.15); }
+        .story-row { display:flex; gap:8px; margin-bottom:10px; align-items:flex-start; }
+        .story-tag { font-size:0.68rem; font-weight:700; color:var(--gold); min-width:58px; padding:2px 0; flex-shrink:0; }
+        .story-body { font-size:0.83rem; color:#d0cce0; line-height:1.6; }
+        .story-arrow-line { text-align:left; padding-left:66px; font-size:0.75rem; color:rgba(217,177,111,0.3); margin:-6px 0 4px; }
+        .story-highlight { color:var(--gold-soft); font-weight:700; }
+        .story-core { background:rgba(217,177,111,0.06); border-left:2px solid var(--gold); padding:7px 10px; border-radius:0 6px 6px 0; font-size:0.84rem; color:var(--gold-soft); line-height:1.6; margin-top:4px; font-weight:600; }
+
+        /* ── 오늘의 최종 결론 ── */
+        .today-conclusion { background:linear-gradient(135deg,rgba(30,18,50,0.97),rgba(20,24,42,0.97)); border:1px solid rgba(217,177,111,0.3); border-radius:12px; padding:14px; margin-bottom:14px; }
+        .tc-title { font-size:0.82rem; font-weight:700; color:var(--gold); margin-bottom:10px; text-align:center; }
+        .tc-flow { display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.07); flex-wrap:wrap; }
+        .tc-item { text-align:center; padding:6px 12px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08); min-width:64px; }
+        .tc-item.tc-today { border-color:rgba(217,177,111,0.4); background:rgba(217,177,111,0.08); }
+        .tc-label { font-size:0.6rem; color:var(--muted); margin-bottom:2px; }
+        .tc-num { font-size:1.4rem; font-weight:900; color:var(--gold); line-height:1.1; }
+        .tc-kw { font-size:0.6rem; color:var(--teal); margin-top:2px; }
+        .tc-sep { font-size:0.85rem; color:rgba(255,255,255,0.18); }
+        .tc-msg { font-size:0.83rem; line-height:1.65; color:var(--text); }
+        .tc-msg-line { margin-bottom:5px; }
+        .tc-final { margin-top:9px; padding-top:9px; border-top:1px solid rgba(255,255,255,0.07); font-size:0.8rem; color:var(--gold-soft); }
+
         /* ── 10년 타임라인 새 스타일 ── */
         .timeline-wrap { background: linear-gradient(135deg, rgba(26,30,52,0.95), rgba(38,28,61,0.92)); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px 14px 12px; margin-bottom: 16px; position: relative; overflow: hidden; backdrop-filter: blur(6px); }
         .timeline-wrap::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(163,102,255,0.08), transparent 70%); pointer-events: none; }
@@ -411,6 +450,8 @@
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
+        <div id="stageProgressBar"></div>
+        <div id="storyReport"></div>
         <div id="cycleArea"></div>
 
         <!-- 이전 심층 세션 UI – 현재 미사용 (각 단계별 심층 버튼으로 대체됨) -->
@@ -482,6 +523,8 @@
         <p style="font-size:0.8rem;color:var(--text);opacity:0.6;margin-top:10px;margin-bottom:50px;">
             * 개인의 수비학적 주기와 일운(Daily Number)을 결합한 분석입니다.
         </p>
+
+        <div id="todayConclusion"></div>
 
         <div class="section-title">🔮 오늘의 맞춤 코칭 가이드</div>
         <div class="card" style="border:1px solid var(--accent);background:rgba(163,102,255,0.05);padding:20px;margin-bottom:20px;border-radius:15px;">

@@ -383,6 +383,59 @@ function startAnalysis() {
     setHtml("tableBody", cyData.map(c => `<tr><td>${c.s}</td><td>${c.a}</td><td class="p-num">${c.p}</td><td class="c-num">${c.c}</td></tr>`).join(""));
     setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><div class="cy-hd-left"><span class="cy-hd-stage">${c.s} (${c.a}세)</span><span class="cy-hd-age">${TITLE_MAP[c.p] || ""}</span></div><div class="cy-hd-badges"><span class="cy-badge-p">P${c.p}</span><span class="cy-badge-c">C${c.c}</span></div></div><div class="cycle-content-acc"><div class="cy-info-row"><span class="cycle-label-p">📍 환경 ${c.p}번</span></div><span class="cycle-text">${P_DETAIL[c.p] || ""}</span><div class="cy-info-row"><span class="cycle-label-c">🎯 과제 ${c.c}번</span></div><span class="cycle-text">${C_DETAIL[c.c] || ""}</span><button class="cycle-deep-btn" data-cycle-index="${i}">심층 진단 리포트 →</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
 
+    // ── 현재 단계 계산 ──
+    const userAge = curY - y;
+    let curStageIdx = 3;
+    if (userAge <= age1) curStageIdx = 0;
+    else if (userAge <= age1 + 9) curStageIdx = 1;
+    else if (userAge <= age1 + 18) curStageIdx = 2;
+    const stageSeasons = ["봄 · 씨앗기", "여름 · 성장기", "가을 · 결실기", "겨울 · 완성기"];
+
+    // ── 프로그레스 바 ──
+    setHtml("stageProgressBar", `<div class="stage-progress-wrap">
+        <div class="stage-progress-bar">
+            ${cyData.map((c, i) => `
+                <div class="stage-step ${i === curStageIdx ? 'active' : i < curStageIdx ? 'done' : ''}">
+                    <div class="step-dot">${i < curStageIdx ? '✓' : (i === curStageIdx ? '◉' : String(i + 1))}</div>
+                    <div class="step-label">${c.s}<br>${stageSeasons[i]}</div>
+                </div>
+                ${i < 3 ? `<div class="step-line-wrap"><div class="step-line ${i < curStageIdx ? 'done' : ''}"></div></div>` : ''}
+            `).join("")}
+        </div>
+        <div class="stage-progress-msg">
+            현재 당신은 <strong style="color:var(--gold);">${curStageIdx + 1}단계 — ${stageSeasons[curStageIdx]}</strong>를 지나고 있습니다
+            <span style="color:var(--muted);font-size:0.72rem;margin-left:5px;">(${cyData[curStageIdx].a}세)</span>
+        </div>
+    </div>`);
+
+    // ── 인생 스토리텔링 리포트 ──
+    const curCycle = cyData[curStageIdx];
+    const curPNum = Number(curCycle.p);
+    const curCNum = Number(curCycle.c);
+    const curCD = (CHALLENGE_DATA && CHALLENGE_DATA[curCNum]) || { name: "균형", report: "" };
+    const reportParas = curCD.report ? curCD.report.split("\n\n") : [];
+    const challengeCore = reportParas[1] || reportParas[0] || "";
+    const lpDescClean = (DEEP_MAP[lp] || "").replace(/<[^>]+>/g, "").trim();
+    const lpShort = lpDescClean.split(/[.。]/)[0];
+
+    setHtml("storyReport", `<div class="story-report">
+        <div class="story-title">✦ 당신의 인생 스토리 — 지금 이 순간의 나침반</div>
+        <div class="story-row">
+            <div class="story-tag">🌱 본질</div>
+            <div class="story-body">당신은 타고난 <strong class="story-highlight">${lp}번 · ${TITLE_MAP[lp] || ""}</strong>의 에너지를 지닌 분입니다. ${lpShort}.</div>
+        </div>
+        <div class="story-arrow-line">↓</div>
+        <div class="story-row">
+            <div class="story-tag">🌍 현재 환경</div>
+            <div class="story-body">지금은 인생 <strong class="story-highlight">${curStageIdx + 1}단계 · ${curPNum}번 ${TITLE_MAP[curPNum] || ""}</strong>입니다. ${P_DETAIL[curPNum] || ""}</div>
+        </div>
+        <div class="story-arrow-line">↓</div>
+        <div class="story-row">
+            <div class="story-tag">🎯 핵심 처방</div>
+            <div class="story-body"><div class="story-core">${challengeCore}</div></div>
+        </div>
+    </div>`);
+
     // 즉시 통합 진단 리포트 출력 (질문/선택 버튼 없음)
     (function attachCycleDeepHandlers() {
         try {
@@ -513,6 +566,40 @@ function startAnalysis() {
 
     const cs = YEAR_STRATEGY[py] || YEAR_STRATEGY[1];
     setHtml("yearHighlightArea", `<div class="card" style="border:1px solid var(--accent);background:linear-gradient(145deg,rgba(163,102,255,0.12),rgba(20,184,166,0.08));padding:14px 16px;margin-top:20px;margin-bottom:16px;border-radius:12px;position:relative;overflow:hidden;"><div style="position:absolute;top:-6px;right:8px;font-size:3.5rem;color:rgba(163,102,255,0.08);font-weight:bold;line-height:1;">${py}</div><div style="font-size:0.72rem;color:var(--teal);font-weight:700;margin-bottom:4px;">🌟 ${curY}년 메인 테마</div><div style="font-size:1.1rem;font-weight:bold;color:var(--text);margin-bottom:8px;">${py}번. ${TITLE_MAP[py]}</div><p style="font-size:0.84rem;color:#ccc;line-height:1.55;position:relative;z-index:1;margin:0;"><b style="color:var(--gold);">목표:</b> ${cs.goal}<br><b style="color:var(--gold);">전략:</b> ${cs.action}</p></div>`);
+
+    // ── 오늘의 최종 결론 ──
+    const pyKw = TL_KEYWORD[py] || (TITLE_MAP[py] || "").split("의")[0] || "";
+    const pmKw = (TITLE_MAP[pm] || "").split("의")[0] || "";
+    const pdKw = (TITLE_MAP[pd] || "").split("의")[0] || "";
+    setHtml("todayConclusion", `
+        <div class="section-title">🔮 오늘의 최종 결론</div>
+        <div class="today-conclusion">
+            <div class="tc-title">📌 지금 이 순간, 당신에게 가장 필요한 메시지</div>
+            <div class="tc-flow">
+                <div class="tc-item">
+                    <div class="tc-label">올해 (${curY})</div>
+                    <div class="tc-num">${py}</div>
+                    <div class="tc-kw">${pyKw}</div>
+                </div>
+                <div class="tc-sep">×</div>
+                <div class="tc-item">
+                    <div class="tc-label">${curM}월</div>
+                    <div class="tc-num">${pm}</div>
+                    <div class="tc-kw">${pmKw}</div>
+                </div>
+                <div class="tc-sep">×</div>
+                <div class="tc-item tc-today">
+                    <div class="tc-label">오늘 ${curD}일</div>
+                    <div class="tc-num">${pd}</div>
+                    <div class="tc-kw">${pdKw}</div>
+                </div>
+            </div>
+            <div class="tc-msg">
+                <div class="tc-msg-line"><strong style="color:var(--gold);">📌 올해의 방향 (${py}번):</strong> ${cs.goal}</div>
+                <div class="tc-msg-line"><strong style="color:var(--teal);">⚡ 지금 바로 할 행동:</strong> ${cs.action}</div>
+                <div class="tc-final">✦ 이 모든 흐름 속에서 당신의 핵심 과제는 <strong style="color:var(--gold);">${curCNum}번 · ${curCD.name}</strong>의 균형입니다. ${reportParas[1] ? `<em style="color:#c5bde0;">"${reportParas[1]}"</em>` : ""}</div>
+            </div>
+        </div>`);
 
     renderTimeline(mr_r, dr_r, py, curY, curM);
 
