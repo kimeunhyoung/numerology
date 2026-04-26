@@ -415,9 +415,6 @@ function startAnalysis() {
     const curCD = (CHALLENGE_DATA && CHALLENGE_DATA[curCNum]) || { name: "균형", keyword: "균형", why: "", report: "" };
     const prescKeyword = curCD.keyword || "";
     const prescWhy = curCD.why || "";
-    const lpDescClean = (DEEP_MAP[lp] || "").replace(/<[^>]+>/g, "").trim();
-    const lpShort = lpDescClean.split(/[.。]/)[0];
-
     // 현재 대주기 결정
     const majorCycles = [
         { order: "첫 번째", num: mr_r, ageRange: `0~${age1}세`, chapter: "씨앗을 뿌리는 챕터", symbol: "🌱" },
@@ -425,38 +422,33 @@ function startAnalysis() {
         { order: "세 번째", num: yr_r, ageRange: `${age1 + 28}세 이후`, chapter: "열매를 거두는 챕터", symbol: "🍂" }
     ];
     const curMajor = userAge <= age1 ? majorCycles[0] : (userAge <= age1 + 27 ? majorCycles[1] : majorCycles[2]);
-    const majorDescClean = (DEEP_MAP[curMajor.num] || "").replace(/<[^>]+>/g, "").trim();
-    const majorShort = majorDescClean.split(/[.。]/)[0];
 
     setHtml("storyReport", `<div class="story-report">
         <div class="story-title">✦ 당신의 인생 스토리 — 지금 이 순간의 나침반</div>
 
         <div class="story-card">
-            <div class="story-card-tag">🌟 본질 · 타고난 에너지</div>
-            <div class="story-card-main">${lp}번 · ${TITLE_MAP[lp] || ""}</div>
-            <div class="story-card-desc">${lpShort}.</div>
+            <div class="story-card-tag">🌟 본질 · 인생여정수 ${lp}번</div>
+            <div class="story-card-desc">${DEEP_MAP[lp] || ""}</div>
         </div>
 
         <div class="story-arrow-line">↓</div>
 
         <div class="story-card">
-            <div class="story-card-tag">${curMajor.symbol} 인생 흐름 · ${curMajor.order} 대주기 (${curMajor.ageRange})</div>
-            <div class="story-card-main">${curMajor.num}번 에너지 — <span class="story-chapter">${curMajor.chapter}</span></div>
-            <div class="story-card-desc">${majorShort}.</div>
+            <div class="story-card-tag">${curMajor.symbol} 인생 흐름 · ${curMajor.order} 대주기 ${curMajor.num}번 (${curMajor.ageRange}) — <span class="story-chapter">${curMajor.chapter}</span></div>
+            <div class="story-card-desc">${DEEP_MAP[curMajor.num] || ""}</div>
         </div>
 
         <div class="story-arrow-line">↓</div>
 
         <div class="story-card">
-            <div class="story-card-tag">📍 현재 환경 · 인생 ${curStageIdx + 1}단계 피나클</div>
-            <div class="story-card-main">피나클 ${curPNum}번 · ${TITLE_MAP[curPNum] || ""}</div>
+            <div class="story-card-tag">📍 현재 환경 · 인생 ${curStageIdx + 1}단계 피나클 ${curPNum}번</div>
             <div class="story-card-desc">${P_DETAIL[curPNum] || ""}</div>
         </div>
 
         <div class="story-arrow-line">↓</div>
 
         <div class="story-card">
-            <div class="story-card-tag">🎯 핵심 처방 · 챌린지 ${curCNum}번</div>
+            <div class="story-card-tag">🎯 핵심 처방 · 챌린지 ${curCNum}번 · ${curCD.name}</div>
             <div class="story-presc-box">
                 <div class="story-presc-headline">지금 당신에게 가장 필요한 것은<br><span class="story-presc-keyword">「 ${prescKeyword} 」</span></div>
                 <div class="story-presc-divider"></div>
