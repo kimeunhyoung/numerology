@@ -407,14 +407,14 @@ function startAnalysis() {
                         .join("");
 
                     reportEl.innerHTML = `
-                        <div style="font-size:0.78rem;color:var(--gold);font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(217,177,111,0.15);">✦ ${pinnacleEnv} × ${cd.name} — 심층 진단 리포트</div>
-                        <div style="border-left:2px solid var(--teal);padding:6px 10px;margin-bottom:8px;">
-                            <span style="font-size:0.72rem;color:var(--teal);font-weight:700;">📍 현재 환경 (Pinnacle ${pinnacleNum})</span>
-                            <div style="font-size:0.82rem;color:#ccc;line-height:1.6;margin-top:3px;">${pinnacleDesc}</div>
+                        <div style="font-size:0.78rem;color:var(--gold);font-weight:700;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid rgba(217,177,111,0.15);text-align:left;">✦ ${pinnacleEnv} × ${cd.name} — 심층 진단 리포트</div>
+                        <div style="border-left:2px solid var(--teal);padding:5px 9px;margin-bottom:6px;text-align:left;">
+                            <div style="font-size:0.72rem;color:var(--teal);font-weight:700;line-height:1.2;margin-bottom:3px;">📍 현재 환경 (Pinnacle ${pinnacleNum})</div>
+                            <div style="font-size:0.82rem;color:#ccc;line-height:1.55;">${pinnacleDesc}</div>
                         </div>
-                        <div style="border-left:2px solid var(--gold);padding:6px 10px;">
-                            <span style="font-size:0.72rem;color:var(--gold);font-weight:700;">🎯 핵심 과제 (Challenge ${challengeNum}) — ${cd.name}</span>
-                            <div style="font-size:0.84rem;color:#efe9e3;line-height:1.7;margin-top:5px;">${fmtReport}</div>
+                        <div style="border-left:2px solid var(--gold);padding:5px 9px;text-align:left;">
+                            <div style="font-size:0.72rem;color:var(--gold);font-weight:700;line-height:1.2;margin-bottom:3px;">🎯 핵심 과제 (Challenge ${challengeNum}) — ${cd.name}</div>
+                            <div style="font-size:0.84rem;color:#efe9e3;line-height:1.6;">${fmtReport}</div>
                         </div>`;
                     reportEl.style.display = "block";
                     reportEl.scrollIntoView({ behavior: "smooth", block: "center" });
