@@ -292,7 +292,8 @@ function renderTimeline(mr_r, dr_r, py, curYear, curM) {
 }
 
 function startAnalysis() {
-    const name = document.getElementById("inputName").value.trim() || "무명";
+    const nameRaw = document.getElementById("inputName").value.trim();
+    const name = nameRaw || "무명";
     const dateStr = document.getElementById("inputBirth").value;
     if (!dateStr) {
         showToast("생년월일을 먼저 선택해주세요.", "warn");
@@ -323,7 +324,7 @@ function startAnalysis() {
     document.getElementById("v-lp").innerText = `${lp}(${lpS})`;
     document.getElementById("v-mn").innerText = `${mn}(${mnS})`;
 
-    const hasName = name && name.trim().length > 0;
+    const hasName = nameRaw.length > 0;
     const nameCardsEl = document.getElementById("nameNumberCards");
     if (nameCardsEl) nameCardsEl.style.display = hasName ? "contents" : "none";
 
