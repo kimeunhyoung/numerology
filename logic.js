@@ -616,7 +616,7 @@ function startAnalysis() {
     const pdFlow = fp[pd] || pdKw;
     const todayInsightRaw = (TODAY_INSIGHT && TODAY_INSIGHT[pd]) || `오늘(${pd}번)은 <strong style="color:#c5bde0;">${pdFlow} 기운</strong>이 두드러지니, <em style="color:var(--gold);">「${prescKeyword}」</em>으로 중심을 잡는 것이 가장 중요합니다.`;
     const todayInsightText = todayInsightRaw.replace(/\{presc\}/g, prescKeyword);
-    const storyNarrative = `올해(${py}번)는 <strong style="color:var(--gold-soft);">${pyFlow} 시기</strong>입니다. 특히 이번 달(${pm}번)에는 <strong style="color:var(--teal);">${pmFlow} 에너지</strong>가 더해지며 ${pmKw}의 흐름이 당신을 감싸고 있습니다.<br><br>${todayInsightText}`;
+    const storyNarrative = `올해(${py}번)의 <strong style="color:var(--gold-soft);">${pyFlow} 에너지</strong>가 이달(${pm}번)의 <strong style="color:var(--teal);">${pmFlow} 흐름</strong>을 만나, 오늘 당신 안에서 하나의 물결로 수렴되고 있습니다.<br><br>${todayInsightText}`;
     setHtml("todayConclusion", `
         <div class="section-title">🔮 오늘의 최종 결론</div>
         <div class="today-conclusion">
@@ -641,11 +641,11 @@ function startAnalysis() {
                 </div>
             </div>
             <div class="tc-narrative">${storyNarrative}</div>
-            <div class="tc-msg">
-                <div class="tc-msg-line"><strong style="color:var(--gold);">📌 올해의 방향:</strong> ${cs.goal}</div>
-                <div class="tc-msg-line"><strong style="color:var(--teal);">⚡ 지금 바로 할 행동:</strong> ${cs.action}</div>
-                <div class="tc-final">✦ 이 모든 흐름 속에서 당신의 핵심 과제는 <strong style="color:var(--gold);">${curCNum}번 · ${curCD.name}</strong>의 균형입니다. ${prescKeyword ? `<em style="color:#c5bde0;">지금 필요한 것: 「${prescKeyword}」</em>` : ""}</div>
-            </div>
+            ${prescKeyword ? `<div class="tc-presc-highlight">
+                <div class="tc-presc-label">오늘 당신에게 단 하나의 지침이 있다면</div>
+                <div class="tc-presc-kw">「 ${prescKeyword} 」</div>
+                <div class="tc-presc-sub">${curCNum}번 챌린지 · ${curCD.name}</div>
+            </div>` : ""}
         </div>`);
 
     renderTimeline(mr_r, dr_r, py, curY, curM);
