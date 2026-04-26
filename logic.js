@@ -8,6 +8,7 @@ const {
     TITLE_MAP,
     TL_KEYWORD,
     FLOW_PHRASE,
+    TODAY_INSIGHT,
     TL_COLOR,
     TL_DESC,
     DEEP_MAP,
@@ -613,7 +614,9 @@ function startAnalysis() {
     const pyFlow = fp[py] || pyKw;
     const pmFlow = fp[pm] || pmKw;
     const pdFlow = fp[pd] || pdKw;
-    const storyNarrative = `올해(${py}번)는 <strong style="color:var(--gold-soft);">${pyFlow} 시기</strong>입니다. 특히 이번 달(${pm}번)에는 <strong style="color:var(--teal);">${pmFlow} 에너지</strong>가 더해지며 ${pmKw}의 흐름이 당신을 감싸고 있습니다. 이러한 흐름 속에서 오늘(${pd}번)은 <strong style="color:#c5bde0;">${pdFlow} 기운</strong>이 두드러지니, <em style="color:var(--gold);">「${prescKeyword}」</em>으로 중심을 잡는 것이 가장 중요합니다.`;
+    const todayInsightRaw = (TODAY_INSIGHT && TODAY_INSIGHT[pd]) || `오늘(${pd}번)은 <strong style="color:#c5bde0;">${pdFlow} 기운</strong>이 두드러지니, <em style="color:var(--gold);">「${prescKeyword}」</em>으로 중심을 잡는 것이 가장 중요합니다.`;
+    const todayInsightText = todayInsightRaw.replace(/\{presc\}/g, prescKeyword);
+    const storyNarrative = `올해(${py}번)는 <strong style="color:var(--gold-soft);">${pyFlow} 시기</strong>입니다. 특히 이번 달(${pm}번)에는 <strong style="color:var(--teal);">${pmFlow} 에너지</strong>가 더해지며 ${pmKw}의 흐름이 당신을 감싸고 있습니다.<br><br>${todayInsightText}`;
     setHtml("todayConclusion", `
         <div class="section-title">🔮 오늘의 최종 결론</div>
         <div class="today-conclusion">
