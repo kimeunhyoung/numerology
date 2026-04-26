@@ -377,6 +377,11 @@ function renderTimeline(mr_r, dr_r, py, curYear, curM) {
 function startAnalysis() {
     const nameRaw = document.getElementById("inputName").value.trim();
     const name = nameRaw || "무명";
+    // Ensure data is loaded and valid
+    if (!window.NUMEROLOGY_DATA || typeof TITLE_MAP === "undefined" || typeof GROWTH_DATA === "undefined" || Object.keys(GROWTH_DATA).length === 0) {
+        showToast("데이터가 완전히 로드되지 않았습니다. 새로고침(F5) 후 다시 시도해주세요.", "warn", 3000);
+        return;
+    }
     const dateStr = document.getElementById("inputBirth").value;
     if (!dateStr) {
         showToast("생년월일을 먼저 선택해주세요.", "warn");
