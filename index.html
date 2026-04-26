@@ -606,7 +606,45 @@
     </div>
 </div>
 
-<script src="./data.js?v=20260427T0033"></script>
-<script src="./logic.js?v=20260427T0033"></script>
+<script>
+    // Temporary: unregister service workers and clear caches to force fresh assets,
+    // then dynamically load data.js and logic.js with a timestamp to bypass cache.
+    (function () {
+        try {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    regs.forEach(r => {
+                        try { r.unregister(); } catch (e) { console.warn('sw unregister error', e); }
+                    });
+                    console.log('SW unregister attempted');
+                }).catch(e => console.warn('sw getRegistrations failed', e));
+            }
+        } catch (e) {
+            console.warn('serviceWorker unregister error', e);
+        }
+
+        try {
+            if (window.caches) {
+                caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => {
+                    console.log('Caches cleared');
+                }).catch(e => console.warn('caches clear failed', e));
+            }
+        } catch (e) {
+            console.warn('caches clear error', e);
+        }
+
+        var t = Date.now();
+        function loadScript(path) {
+            var s = document.createElement('script');
+            s.src = path + '?t=' + t;
+            s.defer = true;
+            document.head.appendChild(s);
+            return s;
+        }
+        // load data first, then logic
+        loadScript('./data.js');
+        loadScript('./logic.js');
+    })();
+</script>
 </body>
 </html>
