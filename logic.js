@@ -590,7 +590,7 @@ function startAnalysis() {
 
     finalHtml += `
     <div class="loshu-report-card" style="border-left-color:#fbc531;background:rgba(251,197,49,0.04);">
-        <h5 style="color:#fbc531;">💡 핵심 성장 전략</h5>
+        <h5 style="color:var(--gold);">💡 핵심 성장 전략</h5>
         <div class="loshu-item">${INTERPRETATION_TEXTS.loshuCoreStructurePrefix} ${has(5) ? INTERPRETATION_TEXTS.loshuCoreStructureWith5 : INTERPRETATION_TEXTS.loshuCoreStructureWithout5}</div>
         ${(has(9) && has(5) && has(1)) ? `<div class="loshu-item">${INTERPRETATION_TEXTS.loshuSuccessArrow}</div>` : ""}
         <div class="loshu-item"><b>📍 최종 솔루션:</b> ${solutionTxt}</div>

@@ -197,7 +197,7 @@
         loshuCoreStructurePrefix: "당신은 본래 <span class=\"loshu-point\">지적 야망과 강한 자아</span>가 결합된 구조입니다.",
         loshuCoreStructureWith5: "그나마 <span class='loshu-point'>복원력(5)</span>이라는 오뚝이 근성이 있어 위기에서 살아남는 천행을 타고났습니다.",
         loshuCoreStructureWithout5: "<span class='loshu-point'>중심(5)</span>이 비어 있어 감정 기복이 심할 수 있으니 정신 수양이 필수입니다.",
-        loshuSuccessArrow: "특히 <b>'성공의 화살표'</b>를 가진 당신은 <span class=\"loshu-point\">결국 높은 자리에 오를 팔자</span>입니다. 어설픈 조언에 흔들리지 마세요. <b>당신의 직관</b>이 곧 정답이니 뚝심 있게 밀어붙이세요.",
+        loshuSuccessArrow: "특히 <span class=\"loshu-point\">'성공의 화살표'</span>를 가진 당신은 결국 높은 자리에 오를 팔자입니다. 어설픈 조언에 흔들리지 마세요. 당신의 직관이 곧 정답이니 뚝심 있게 밀어붙이세요.",
         comboCommentMatch: "인생여정수와 올해의 수가 '{num}'로 일치합니다. 본연의 힘이 극대화되는 시기이니, 가장 자신 있는 일을 오늘 바로 실행하세요!",
         comboCommentYear7: "올해는 내실을 다지는 해입니다. {lp}번의 고유한 재능을 어떻게 더 지혜롭게 전달할지 깊이 성찰해 보세요.",
         comboCommentDefault: "당신은 {lp}번의 고유한 역량을 가졌습니다. 현재 지나고 있는 {py}번의 에너지 흐름은 그 역량을 더욱 견고하게 만들어줄 소중한 과정입니다."
