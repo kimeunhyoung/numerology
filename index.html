@@ -604,7 +604,26 @@
 </div>
 
 <!-- Use fixed local data file to guarantee latest content (bypass Pages cache) -->
-<script src="./data.v3.js?v=1"></script>
+<script src="./data.v2.js?v=1"></script>
+<script>
+  // Fallback loader: if data script failed to define NUMEROLOGY_DATA, load minimal fallback
+  (function(){
+    function loadFallback(){
+      if (!window.NUMEROLOGY_DATA) {
+        var s = document.createElement('script');
+        s.src = './data.v3.js?v=1';
+        document.head.appendChild(s);
+        console.warn('Loaded fallback data.v3.js because NUMEROLOGY_DATA was not defined.');
+      }
+    }
+    // Give the main data script a moment to execute, then check
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(loadFallback, 50);
+    } else {
+      document.addEventListener('DOMContentLoaded', function(){ setTimeout(loadFallback, 50); });
+    }
+  })();
+</script>
 <script src="./logic.js?v=4c43b62"></script>
 </body>
 </html>
