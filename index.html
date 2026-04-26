@@ -244,6 +244,43 @@
         .story-highlight { color:var(--gold-soft); font-weight:700; }
         .story-core { background:rgba(217,177,111,0.06); border-left:2px solid var(--gold); padding:7px 10px; border-radius:0 6px 6px 0; font-size:0.84rem; color:var(--gold-soft); line-height:1.6; margin-top:4px; font-weight:600; }
 
+        /* ── 핵심 처방 강조 박스 ── */
+        .story-presc-box {
+            background: linear-gradient(145deg, rgba(40,22,60,0.98), rgba(28,20,48,0.97));
+            border: 1px solid rgba(217,177,111,0.45);
+            border-radius: 12px;
+            padding: 16px 14px 14px;
+            margin-top: 4px;
+            box-shadow: 0 0 18px rgba(217,177,111,0.08), inset 0 0 20px rgba(163,102,255,0.04);
+        }
+        .story-presc-headline {
+            font-size: 0.82rem;
+            color: #c5b8d8;
+            line-height: 1.5;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .story-presc-keyword {
+            display: block;
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: 0.04em;
+            margin-top: 6px;
+            text-shadow: 0 0 12px rgba(217,177,111,0.35);
+        }
+        .story-presc-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(217,177,111,0.4), transparent);
+            margin: 10px 0;
+        }
+        .story-presc-why {
+            font-size: 0.82rem;
+            color: #c8c0dc;
+            line-height: 1.72;
+            word-break: keep-all;
+        }
+
         /* ── 오늘의 최종 결론 ── */
         .today-conclusion { background:linear-gradient(135deg,rgba(30,18,50,0.97),rgba(20,24,42,0.97)); border:1px solid rgba(217,177,111,0.3); border-radius:12px; padding:14px; margin-bottom:14px; }
         .tc-title { font-size:0.82rem; font-weight:700; color:var(--gold); margin-bottom:10px; text-align:center; }

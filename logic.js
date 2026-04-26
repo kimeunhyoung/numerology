@@ -412,9 +412,9 @@ function startAnalysis() {
     const curCycle = cyData[curStageIdx];
     const curPNum = Number(curCycle.p);
     const curCNum = Number(curCycle.c);
-    const curCD = (CHALLENGE_DATA && CHALLENGE_DATA[curCNum]) || { name: "균형", report: "" };
-    const reportParas = curCD.report ? curCD.report.split("\n\n") : [];
-    const challengeCore = reportParas[1] || reportParas[0] || "";
+    const curCD = (CHALLENGE_DATA && CHALLENGE_DATA[curCNum]) || { name: "균형", keyword: "균형", why: "", report: "" };
+    const prescKeyword = curCD.keyword || "";
+    const prescWhy = curCD.why || "";
     const lpDescClean = (DEEP_MAP[lp] || "").replace(/<[^>]+>/g, "").trim();
     const lpShort = lpDescClean.split(/[.。]/)[0];
 
@@ -432,7 +432,13 @@ function startAnalysis() {
         <div class="story-arrow-line">↓</div>
         <div class="story-row">
             <div class="story-tag">🎯 핵심 처방</div>
-            <div class="story-body"><div class="story-core">${challengeCore}</div></div>
+            <div class="story-body">
+                <div class="story-presc-box">
+                    <div class="story-presc-headline">지금 당신에게 가장 필요한 것은<br><span class="story-presc-keyword">「 ${prescKeyword} 」</span></div>
+                    <div class="story-presc-divider"></div>
+                    <div class="story-presc-why">${prescWhy}</div>
+                </div>
+            </div>
         </div>
     </div>`);
 
