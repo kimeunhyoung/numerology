@@ -367,7 +367,20 @@ function startAnalysis() {
 
     const lpV = (lp === 11 ? 2 : (lp === 22 ? 4 : (lp === 33 ? 6 : lp)));
     const age1 = 36 - lpV;
-    setHtml("mainCycleGrid", `<div class="cycle-mini-card"><span>제1주기(월)</span><strong>${mr_r}</strong></div><div class="cycle-mini-card"><span>제2주기(일)</span><strong>${dr_r}</strong></div><div class="cycle-mini-card"><span>제3주기(년)</span><strong>${yr_r}</strong></div>`);
+    const userAgeForCycle = curY - y;
+    const curMajorIdx = userAgeForCycle <= age1 ? 0 : (userAgeForCycle <= age1 + 27 ? 1 : 2);
+    const majorCards = [
+        { label: "제1주기 (월)", num: mr_r, range: `0~${age1}세` },
+        { label: "제2주기 (일)", num: dr_r, range: `${age1+1}~${age1+27}세` },
+        { label: "제3주기 (년)", num: yr_r, range: `${age1+28}세~` }
+    ];
+    setHtml("mainCycleGrid", majorCards.map((mc, i) => `
+        <div class="cycle-mini-card ${i === curMajorIdx ? 'cycle-mini-active' : ''}">
+            ${i === curMajorIdx ? '<div class="cycle-mini-now">▶ 현재</div>' : ''}
+            <span>${mc.label}</span>
+            <strong>${mc.num}</strong>
+            <div class="cycle-mini-range">${mc.range}</div>
+        </div>`).join(""));
     setHtml("mainCycleArea", [{ t: "첫 번째 주기", a: `0~${age1}세`, v: mr_r, q: "인생의 전반기, 어떤 씨앗을 뿌려야 하는가?" }, { t: "두 번째 주기", a: `${age1 + 1}~${age1 + 27}세`, v: dr_r, q: "인생의 중반기, 어떤 꽃을 피워야 하는가?" }, { t: "세 번째 주기", a: `${age1 + 28}세~`, v: yr_r, q: "인생의 후반기, 어떤 열매를 거두어야 하는가?" }]
         .map(c => `<div class="accordion"><div class="accordion-header"><h4>✦ ${c.t} ${c.v}번 (${c.a})</h4></div><div class="accordion-content"><span class="q-text">Q. ${c.q}</span><div class="desc-content">${DEEP_MAP[c.v] || ""}</div></div></div>`)
         .join(""));

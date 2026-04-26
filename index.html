@@ -129,9 +129,13 @@
             letter-spacing: 0.2px;
         }
         .cycle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 10px; }
-        .cycle-mini-card { background: rgba(20,24,42,0.92); padding: 8px 5px; border-radius: 10px; text-align: center; border: 1px solid var(--glass-border); backdrop-filter: blur(8px); }
+        .cycle-mini-card { background: rgba(20,24,42,0.92); padding: 8px 5px; border-radius: 10px; text-align: center; border: 1px solid var(--glass-border); backdrop-filter: blur(8px); position:relative; }
         .cycle-mini-card span { display: block; font-size: 0.7rem; color: #d6cfea; margin-bottom: 4px; }
         .cycle-mini-card strong { font-size: 1.2rem; color: var(--accent); display: block; }
+        .cycle-mini-card.cycle-mini-active { border:1.5px solid var(--gold); background:rgba(217,177,111,0.1); box-shadow:0 0 10px rgba(217,177,111,0.18); }
+        .cycle-mini-active strong { color:var(--gold); }
+        .cycle-mini-now { font-size:0.6rem; font-weight:700; color:var(--gold); background:rgba(217,177,111,0.18); border-radius:4px; padding:1px 5px; margin-bottom:4px; display:inline-block; }
+        .cycle-mini-range { font-size:0.62rem; color:#9990b8; margin-top:3px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .card {
             background: rgba(20,24,42,0.92);
