@@ -88,11 +88,10 @@ function showToast(message, type = "warn", duration = 2200) {
 async function checkAuth() {
     let token = null;
     try {
-        token = storage.getItem("token");
+        token = window.localStorage.getItem("token") || window.sessionStorage.getItem("token");
     } catch (e) {
         // fallback if storage access is blocked
-        console.warn("storage access failed, falling back to session/localStorage", e);
-        token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token");
+        console.warn("storage access failed", e);
     }
     const loginView = document.getElementById("loginView");
     const container = document.querySelector(".container");
@@ -141,13 +140,11 @@ async function login() {
 
     // 888 입력시 서버 시도 전에 즉시 오프라인 로그인
     if (password === "888") {
-        const stored = setTokenFallback("local-fallback-token");
-        if (stored) {
-            showToast("로그인 성공!", "success", 1400);
-            setTimeout(() => location.reload(), 500);
-        } else {
-            showToast("로그인 실패: 브라우저가 저장소 접근을 차단하고 있습니다.", "error", 3200);
-        }
+        // 강제로 localStorage에 저장 후 리로드
+        window.localStorage.setItem("token", "local-fallback-token");
+        window.sessionStorage.setItem("token", "local-fallback-token");
+        showToast("로그인 성공!", "success", 1400);
+        setTimeout(() => location.reload(), 500);
         return;
     }
 
