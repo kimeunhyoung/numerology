@@ -418,16 +418,31 @@ function startAnalysis() {
     const lpDescClean = (DEEP_MAP[lp] || "").replace(/<[^>]+>/g, "").trim();
     const lpShort = lpDescClean.split(/[.。]/)[0];
 
+    // 현재 대주기 결정
+    const majorCycles = [
+        { order: "첫 번째", num: mr_r, ageRange: `0~${age1}세`, chapter: "씨앗을 뿌리는 챕터", symbol: "🌱" },
+        { order: "두 번째", num: dr_r, ageRange: `${age1 + 1}~${age1 + 27}세`, chapter: "꽃을 피우는 챕터", symbol: "🌸" },
+        { order: "세 번째", num: yr_r, ageRange: `${age1 + 28}세 이후`, chapter: "열매를 거두는 챕터", symbol: "🍂" }
+    ];
+    const curMajor = userAge <= age1 ? majorCycles[0] : (userAge <= age1 + 27 ? majorCycles[1] : majorCycles[2]);
+    const majorDescClean = (DEEP_MAP[curMajor.num] || "").replace(/<[^>]+>/g, "").trim();
+    const majorShort = majorDescClean.split(/[.。]/)[0];
+
     setHtml("storyReport", `<div class="story-report">
         <div class="story-title">✦ 당신의 인생 스토리 — 지금 이 순간의 나침반</div>
         <div class="story-row">
-            <div class="story-tag">🌱 본질</div>
+            <div class="story-tag">🌟 본질</div>
             <div class="story-body">당신은 타고난 <strong class="story-highlight">${lp}번 · ${TITLE_MAP[lp] || ""}</strong>의 에너지를 지닌 분입니다. ${lpShort}.</div>
         </div>
         <div class="story-arrow-line">↓</div>
         <div class="story-row">
-            <div class="story-tag">🌍 현재 환경</div>
-            <div class="story-body">지금은 인생 <strong class="story-highlight">${curStageIdx + 1}단계 · ${curPNum}번 ${TITLE_MAP[curPNum] || ""}</strong>입니다. ${P_DETAIL[curPNum] || ""}</div>
+            <div class="story-tag">${curMajor.symbol} 인생 흐름</div>
+            <div class="story-body">지금은 <strong class="story-highlight">${curMajor.order} 대주기 · ${curMajor.num}번 에너지</strong>(${curMajor.ageRange})의 흐름 속에 있습니다 — <em class="story-chapter">${curMajor.chapter}</em>. ${majorShort}.</div>
+        </div>
+        <div class="story-arrow-line">↓</div>
+        <div class="story-row">
+            <div class="story-tag">📍 현재 환경</div>
+            <div class="story-body">이 흐름 안에서, 지금 당신은 인생 <strong class="story-highlight">${curStageIdx + 1}단계 · 피나클 ${curPNum}번 ${TITLE_MAP[curPNum] || ""}</strong>의 시기를 보내고 있습니다. ${P_DETAIL[curPNum] || ""}</div>
         </div>
         <div class="story-arrow-line">↓</div>
         <div class="story-row">
