@@ -15,14 +15,16 @@ const {
     C_DETAIL,
     QUESTIONS,
     GROWTH_DATA,
+    CHALLENGE_DATA,
     YEAR_STRATEGY,
     MONTHLY_KEYWORDS,
     DAY_ADVICE,
     DAILY_TIPS,
     LOSHU_STRENGTH_RULES,
     LOSHU_WEAKNESS_RULES,
-    LOSHU_STRESS_RULES,
+    LOSHU_INTENSITY_RULES,
     INTERPRETATION_TEXTS,
+    LOSHU_ARROWS,
     getZodiacInfo
 } = window.NUMEROLOGY_DATA;
 
@@ -181,6 +183,21 @@ function initAccordion() {
 function setHtml(id, html) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
+}
+
+// Loshu arrow detection: returns keys of matched arrows (e.g., "9-5-1")
+function detectLoshuArrows(counts) {
+    const found = [];
+    try {
+        const arrows = LOSHU_ARROWS || {};
+        for (const key of Object.keys(arrows)) {
+            const nums = key.split("-").map(n => parseInt(n.trim(), 10));
+            if (nums.every(n => counts[n] > 0)) found.push(key);
+        }
+    } catch (e) {
+        console.error("Loshu arrow detection error", e);
+    }
+    return found;
 }
 
 function renderTimeline(mr_r, dr_r, py, curYear, curM) {
@@ -351,7 +368,68 @@ function startAnalysis() {
     const c4 = reduceToSingle(Math.abs(mr_r - yr_r), true);
     const cyData = [{ s: "1단계", a: `0~${age1}`, p: p1, c: c1 }, { s: "2단계", a: `${age1 + 1}~${age1 + 9}`, p: p2, c: c2 }, { s: "3단계", a: `${age1 + 10}~${age1 + 18}`, p: p3, c: c3 }, { s: "4단계", a: `${age1 + 19}~`, p: p4, c: c4 }];
     setHtml("tableBody", cyData.map(c => `<tr><td>${c.s}</td><td>${c.a}</td><td class="p-num">${c.p}</td><td class="c-num">${c.c}</td></tr>`).join(""));
-    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><span>제${i + 1}단계: ${TITLE_MAP[c.p] || ""}</span></div><div class="cycle-content-acc"><span class="cycle-label-p">환경(절정) ${c.p}번</span><span class="cycle-text">${P_DETAIL[c.p] || ""}</span><span class="cycle-label-c">과제(도전) ${c.c}번</span><span class="cycle-text">${C_DETAIL[c.c] || ""}</span></div></div>`).join(""));
+    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><span>제${i + 1}단계: ${TITLE_MAP[c.p] || ""}</span></div><div class="cycle-content-acc"><span class="cycle-label-p">환경(절정) ${c.p}번</span><span class="cycle-text">${P_DETAIL[c.p] || ""}</span><span class="cycle-label-c">과제(도전) ${c.c}번</span><span class="cycle-text">${C_DETAIL[c.c] || ""}</span><button class="cycle-deep-btn" data-cycle-index="${i}">현재 주기 심층 분석 받기</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
+
+    // Attach per-cycle deep analysis handlers
+    (function attachCycleDeepHandlers() {
+        try {
+            document.querySelectorAll(".cycle-deep-btn").forEach(btn => {
+                btn.onclick = function () {
+                    const idx = Number(this.dataset.cycleIndex);
+                    const cycle = cyData[idx];
+                    const pinnacleNum = Number(cycle.p) || 1;
+                    const challengeNum = Number(cycle.c) || 0;
+                    const cd = (CHALLENGE_DATA && CHALLENGE_DATA[challengeNum]) || { name: "알 수 없는 과제", q: "질문을 불러올 수 없습니다.", excess: "", deficiency: "" };
+                    const pinnacleEnv = TITLE_MAP[pinnacleNum] || "알 수 없는 환경";
+
+                    const promptEl = document.getElementById(`cycleDeepPrompt-${idx}`);
+                    const reportEl = document.getElementById(`cycleDeepReport-${idx}`);
+                    if (!promptEl || !reportEl) return;
+
+                    // 피나클 + 챌린지 조합 설명과 질문 렌더링
+                    promptEl.innerHTML = `
+                        <div style="background:rgba(217,177,111,0.05);padding:12px;border-radius:8px;margin-bottom:12px;border:1px solid rgba(217,177,111,0.2);">
+                            <div style="font-size:0.85rem;color:var(--gold);font-weight:600;margin-bottom:6px;">
+                                현재 환경: ${pinnacleEnv} + 인생 과제: ${cd.name}
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text);line-height:1.6;">
+                                이 시기는 <span style="color:var(--teal);">${pinnacleEnv.replace('의 시기', '')} 환경</span>에서 <span style="color:var(--gold);">'${cd.name}'</span>라는 과제를 해결해야 하는 중요한 국면입니다.
+                            </div>
+                        </div>
+                        <div class="deep-question" style="margin:0 0 8px 0;">${cd.q}</div>
+                        <div style="display:flex;gap:10px;">
+                            <button class="deep-btn over" id="cycle_yes_${idx}">네, 그런 편이에요 (과잉)</button>
+                            <button class="deep-btn under" id="cycle_no_${idx}">아니요, 오히려 위축되어 있어요 (결핍)</button>
+                        </div>`;
+
+                    reportEl.innerHTML = "";
+                    reportEl.style.display = "none";
+
+                    // handlers
+                    const yesBtn = document.getElementById(`cycle_yes_${idx}`);
+                    const noBtn = document.getElementById(`cycle_no_${idx}`);
+                    const finalize = (mode) => {
+                        const heading = `<h4 style="margin:0 0 12px 0;color:var(--gold);font-size:1.05rem;">[${pinnacleEnv} × ${cd.name}] 전문 상담 리포트</h4>`;
+                        const body = mode === "excess" ? cd.excess : cd.deficiency;
+                        reportEl.innerHTML = `${heading}<div style="font-size:0.95rem;line-height:1.9;color:#efe9e3;white-space:pre-wrap;">${body}</div>`;
+                        reportEl.style.display = "block";
+                        // remove prompt buttons to avoid duplicate answers
+                        promptEl.innerHTML = `
+                            <div style="background:rgba(46,213,115,0.08);padding:10px;border-radius:8px;border:1px solid rgba(46,213,115,0.2);">
+                                <div style="font-size:0.88rem;color:var(--teal);font-weight:600;">✅ 상담이 완료되었습니다</div>
+                                <div style="font-size:0.8rem;color:var(--muted);margin-top:4px;">아래 전문 처방을 확인하고 실천해보세요.</div>
+                            </div>`;
+                        reportEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                    };
+
+                    if (yesBtn) yesBtn.onclick = () => finalize("excess");
+                    if (noBtn) noBtn.onclick = () => finalize("deficiency");
+                };
+            });
+        } catch (e) {
+            console.error("attachCycleDeepHandlers error", e);
+        }
+    })();
 
     const birthOnlyDigits = new Set((String(y) + String(m) + String(d)).split("").map(Number).filter(n => n !== 0));
     const karmicLessons = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => !birthOnlyDigits.has(n));
@@ -398,23 +476,46 @@ function startAnalysis() {
     });
     finalHtml += `<div class="loshu-report-card" style="border-left-color:#ff7b72;margin-bottom:25px;"><h5 style="color:#ff7b72;">⚠️ 보완 영역</h5><div class="desc-content">${weaknessText || INTERPRETATION_TEXTS.loshuWeaknessDefault}</div></div>`;
 
-    let stressTxt = "";
-    LOSHU_STRESS_RULES.forEach(rule => {
-        if (counts[rule.digit] >= rule.minCount) stressTxt += rule.text;
-    });
+    let intensityTxt = "";
+    if (LOSHU_INTENSITY_RULES) {
+        LOSHU_INTENSITY_RULES.forEach(rule => {
+            if (counts[rule.digit] >= rule.minCount) {
+                intensityTxt += rule.text.replace('${count}', counts[rule.digit]);
+            }
+        });
+    }
 
     const solutionTxt = (!has(4) || !has(8)) ? INTERPRETATION_TEXTS.loshuSolutionWhenWeak : INTERPRETATION_TEXTS.loshuSolutionWhenStable;
+    // 강력한 재능 먼저 강조
+    if (intensityTxt) {
+        finalHtml += `<div class="loshu-report-card" style="border-left-color:var(--gold);margin-bottom:25px;"><h5 style="color:var(--gold);">🌟 강력한 타고난 재능</h5><div class="desc-content">${intensityTxt}</div></div>`;
+    }
+
     finalHtml += `
     <div class="loshu-report-card advice-box" style="background: rgba(251, 197, 49, 0.05); border-left: 4px solid #fbc531; padding: 25px; border-radius: 15px;">
         <h5 style="color: #fbc531; font-size: 1.1rem; margin-bottom: 15px;">💡 핵심 성장 전략</h5>
         <div class="desc-content" style="line-height: 1.8;">
-            ${stressTxt ? `<p style="color: #ff7b72; margin-bottom: 15px;">🔥 <b>에너지 과부하 경고:</b> ${stressTxt}</p>` : ""}
             <p style="margin-bottom: 15px;">${INTERPRETATION_TEXTS.loshuCoreStructurePrefix} ${has(5) ? INTERPRETATION_TEXTS.loshuCoreStructureWith5 : INTERPRETATION_TEXTS.loshuCoreStructureWithout5}</p>
             ${(has(9) && has(5) && has(1)) ? `<p style="margin-bottom: 15px;">${INTERPRETATION_TEXTS.loshuSuccessArrow}</p>` : ""}
             <p><b>📍 최종 솔루션:</b> ${solutionTxt}</p>
         </div>
     </div>`;
     setHtml("loshuAnalysis", finalHtml);
+
+    // Loshu arrows detection and 상세 해설 추가
+    try {
+        const arrowKeys = detectLoshuArrows(counts);
+        if (arrowKeys.length > 0) {
+            const arrowEl = document.getElementById("loshuAnalysis");
+            const arrowHtml = arrowKeys.map(k => {
+                const info = (LOSHU_ARROWS && LOSHU_ARROWS[k]) || null;
+                return info ? `<div class="loshu-report-card" style="border-left-color:var(--gold);"><h5 style="color:var(--gold);">➤ 피타고라스 화살표: ${k}</h5><div class="desc-content">${info}</div></div>` : "";
+            }).join("");
+            if (arrowEl) arrowEl.innerHTML = arrowEl.innerHTML + arrowHtml;
+        }
+    } catch (e) {
+        console.error("Arrow append error", e);
+    }
 
     const cs = YEAR_STRATEGY[py] || YEAR_STRATEGY[1];
     setHtml("yearHighlightArea", `<div class="card" style="border:2px solid var(--accent);background:linear-gradient(145deg,rgba(163,102,255,0.15),rgba(20,184,166,0.1));padding:25px;margin-top:40px;margin-bottom:30px;border-radius:20px;position:relative;overflow:hidden;"><div style="position:absolute;top:-10px;right:-10px;font-size:5rem;color:rgba(163,102,255,0.1);font-weight:bold;">${py}</div><h3 style="color:var(--teal);margin-bottom:15px;font-size:1.2rem;">🌟 ${curY}년 메인 테마</h3><div style="font-size:1.4rem;font-weight:bold;color:var(--text);margin-bottom:12px;">${py}번. ${TITLE_MAP[py]}</div><p style="font-size:0.95rem;color:#ccc;line-height:1.6;position:relative;z-index:1;"><b style="color:var(--gold);">올해의 목표:</b> ${cs.goal}<br><b style="color:var(--gold);">행동 전략:</b> ${cs.action}</p></div>`);

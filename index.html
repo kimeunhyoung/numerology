@@ -194,6 +194,17 @@
         .loshu-item { font-size: 0.88rem; color: #ccc; margin-bottom: 10px; line-height: 1.6; }
         .loshu-point { color: var(--gold); font-weight: bold; }
 
+        /* 심층 상담 스타일 */
+        .deep-question { color: var(--gold); font-weight: 800; font-size: 1rem; margin-bottom: 12px; display:block; }
+        .deep-btn { padding: 12px 14px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; }
+        .deep-btn.over { background: linear-gradient(90deg, rgba(217,177,111,0.14), rgba(163,102,255,0.06)); color: var(--text); border:1px solid rgba(217,177,111,0.25); }
+        .deep-btn.under { background: linear-gradient(90deg, rgba(255,110,110,0.06), rgba(20,24,42,0.04)); color: var(--text); border:1px solid rgba(255,110,110,0.12); }
+        .deep-actions { display:flex; gap:12px; margin-top:8px; margin-bottom:14px; }
+        .deep-report { background: rgba(10,10,18,0.9); padding:18px; border-radius:12px; border:1px solid var(--glass-border); line-height:1.9; white-space:pre-wrap; font-size:0.95rem; color: #efe9e3; }
+        .cycle-deep-btn { padding:10px 12px; border-radius:10px; background: linear-gradient(90deg, var(--gold), var(--accent)); color: #111; font-weight:800; border: none; cursor: pointer; margin-top:12px; }
+        .cycle-deep-report { background: linear-gradient(180deg, rgba(14,17,31,0.96), rgba(20,24,42,0.96)); border: 1px solid rgba(217,177,111,0.12); padding:16px; border-radius:12px; margin-top:12px; line-height:1.9; white-space:pre-wrap; display:block; }
+        .deep-prompt-container { margin-top:10px; }
+
         /* ── 10년 타임라인 새 스타일 ── */
         .timeline-wrap { background: linear-gradient(135deg, rgba(26,30,52,0.95), rgba(38,28,61,0.92)); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 24px 24px; margin-bottom: 30px; position: relative; overflow: hidden; backdrop-filter: blur(6px); }
         .timeline-wrap::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(163,102,255,0.08), transparent 70%); pointer-events: none; }
@@ -394,6 +405,19 @@
             </table>
         </div>
         <div id="cycleArea"></div>
+
+        <!-- ── 심층 심리 상담 세션 (질문 → 선택 → 장문 리포트) ── -->
+        <div id="deepCounselSession" style="margin-top:22px;margin-bottom:28px;">
+            <div class="section-title" style="margin-top:6px;">🫂 심층 심리 상담 세션</div>
+            <div style="padding:14px 0 6px;">
+                <span id="deepQuestion" class="deep-question">질문을 불러오는 중입니다...</span>
+                <div class="deep-actions">
+                    <button id="deepBtnOver" class="deep-btn over">네, 그런 편이에요 (에너지 과잉)</button>
+                    <button id="deepBtnUnder" class="deep-btn under">아니요, 오히려 위축되어 있어요 (에너지 결핍)</button>
+                </div>
+                <div id="deepReportArea" class="deep-report" style="display:none;"></div>
+            </div>
+        </div>
 
         <!-- ── 개선: 개운법 → Growth Map ── -->
         <div class="section-title" style="margin-top:40px;">📍 선천 성향 & 후천 보완 역량 진단 (Growth Map)</div>
