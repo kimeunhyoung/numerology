@@ -32,7 +32,7 @@ const {
 
 // PWA(홈 화면 추가) 앱인지 일반 웹인지 판별하여 저장소 결정
 const isPWA = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-const storage = isPWA ? localStorage : sessionStorage;
+const storage = isPWA ? window.localStorage : window.sessionStorage;
 
 document.addEventListener("DOMContentLoaded", checkAuth);
 
@@ -49,7 +49,14 @@ function showToast(message, type = "warn", duration = 2200) {
 }
 
 async function checkAuth() {
-    const token = storage.getItem("token");
+    let token = null;
+    try {
+        token = storage.getItem("token");
+    } catch (e) {
+        // fallback if storage access is blocked
+        console.warn("storage access failed, falling back to session/localStorage", e);
+        token = window.sessionStorage.getItem("token") || window.localStorage.getItem("token");
+    }
     const loginView = document.getElementById("loginView");
     const container = document.querySelector(".container");
 
@@ -101,19 +108,50 @@ async function login() {
             showToast("비밀번호가 틀렸습니다.", "error");
         }
     } catch (e) {
+        console.error("Login fetch error:", e);
         // Fallback: GitHub Pages 등 백엔드 없는 정적 호스팅에서 테스트 로그인 허용
         if (password === "888") {
+            // Try multiple storage fallbacks to be robust across browsers
+            let stored = false;
             try {
-                const store = (typeof storage !== "undefined") ? storage : (window.localStorage || window.sessionStorage);
-                store.setItem("token", "local-fallback-token");
-                showToast("로그인 성공!", "success", 1400);
-                setTimeout(() => location.reload(), 500);
+                storage.setItem("token", "local-fallback-token");
+                stored = true;
             } catch (sErr) {
-                // storage 접근 불가 시 sessionStorage 직접 사용
-                try { window.sessionStorage.setItem("token", "local-fallback-token"); location.reload(); } catch(e2) { showToast("로그인 실패: 브라우저 설정을 확인하세요.", "error", 2600); }
+                console.warn("primary storage set failed", sErr);
+            }
+            if (!stored) {
+                try {
+                    window.localStorage.setItem("token", "local-fallback-token");
+                    stored = true;
+                } catch (sErr2) {
+                    console.warn("localStorage set failed", sErr2);
+                }
+            }
+            if (!stored) {
+                try {
+                    window.sessionStorage.setItem("token", "local-fallback-token");
+                    stored = true;
+                } catch (sErr3) {
+                    console.warn("sessionStorage set failed", sErr3);
+                }
+            }
+            if (!stored) {
+                try {
+                    // Last resort: cookie (short-lived)
+                    document.cookie = `token=local-fallback-token; path=/; max-age=${60 * 60 * 24}`;
+                    stored = true;
+                } catch (cErr) {
+                    console.warn("cookie set failed", cErr);
+                }
+            }
+            if (stored) {
+                showToast("오프라인 모드: 로그인 성공(임시)", "success", 1400);
+                setTimeout(() => location.reload(), 500);
+            } else {
+                showToast("로그인 실패: 브라우저가 저장소 접근을 차단하고 있습니다.", "error", 3200);
             }
         } else {
-            showToast("서버 연결 실패. 비밀번호를 확인하세요.", "error", 2600);
+            showToast("서버 연결 실패 또는 오프라인 상태입니다. (테스트: 비밀번호 '888' 허용)", "error", 3200);
         }
     }
 }
