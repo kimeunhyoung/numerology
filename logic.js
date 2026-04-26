@@ -114,7 +114,10 @@ async function checkAuth() {
     loginView.style.display = "none";
     container.style.display = "block";
 
-    if (navigator.onLine) {
+    // local-fallback-token은 서버 검증 없이 바로 통과
+    const isLocalToken = token === "local-fallback-token" || token === "local-dev-token";
+
+    if (!isLocalToken && navigator.onLine) {
         try {
             const res = await fetch(API + "/check-auth", {
                 method: "GET",
@@ -124,10 +127,13 @@ async function checkAuth() {
             const data = await res.json();
             if (res.status === 401) {
                 showToast("보안 정책이 변경되어 다시 로그인해주세요.", "error", 2600);
-                storage.removeItem("token");
-                location.reload();
+                window.localStorage.removeItem("token");
+                window.sessionStorage.removeItem("token");
+                loginView.style.display = "block";
+                container.style.display = "none";
             } else if (data.token) {
-                storage.setItem("token", data.token);
+                window.localStorage.setItem("token", data.token);
+                window.sessionStorage.setItem("token", data.token);
             }
         } catch (e) {
             console.log("서버 응답 없음, 현재 세션 유지");
