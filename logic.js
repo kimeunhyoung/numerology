@@ -430,31 +430,40 @@ function startAnalysis() {
 
     setHtml("storyReport", `<div class="story-report">
         <div class="story-title">✦ 당신의 인생 스토리 — 지금 이 순간의 나침반</div>
-        <div class="story-row">
-            <div class="story-tag">🌟 본질</div>
-            <div class="story-body">당신은 타고난 <strong class="story-highlight">${lp}번 · ${TITLE_MAP[lp] || ""}</strong>의 에너지를 지닌 분입니다. ${lpShort}.</div>
+
+        <div class="story-card">
+            <div class="story-card-tag">🌟 본질 · 타고난 에너지</div>
+            <div class="story-card-main">${lp}번 · ${TITLE_MAP[lp] || ""}</div>
+            <div class="story-card-desc">${lpShort}.</div>
         </div>
+
         <div class="story-arrow-line">↓</div>
-        <div class="story-row">
-            <div class="story-tag">${curMajor.symbol} 인생 흐름</div>
-            <div class="story-body">지금은 <strong class="story-highlight">${curMajor.order} 대주기 · ${curMajor.num}번 에너지</strong>(${curMajor.ageRange})의 흐름 속에 있습니다 — <em class="story-chapter">${curMajor.chapter}</em>. ${majorShort}.</div>
+
+        <div class="story-card">
+            <div class="story-card-tag">${curMajor.symbol} 인생 흐름 · ${curMajor.order} 대주기 (${curMajor.ageRange})</div>
+            <div class="story-card-main">${curMajor.num}번 에너지 — <span class="story-chapter">${curMajor.chapter}</span></div>
+            <div class="story-card-desc">${majorShort}.</div>
         </div>
+
         <div class="story-arrow-line">↓</div>
-        <div class="story-row">
-            <div class="story-tag">📍 현재 환경</div>
-            <div class="story-body">이 흐름 안에서, 지금 당신은 인생 <strong class="story-highlight">${curStageIdx + 1}단계 · 피나클 ${curPNum}번 ${TITLE_MAP[curPNum] || ""}</strong>의 시기를 보내고 있습니다. ${P_DETAIL[curPNum] || ""}</div>
+
+        <div class="story-card">
+            <div class="story-card-tag">📍 현재 환경 · 인생 ${curStageIdx + 1}단계 피나클</div>
+            <div class="story-card-main">피나클 ${curPNum}번 · ${TITLE_MAP[curPNum] || ""}</div>
+            <div class="story-card-desc">${P_DETAIL[curPNum] || ""}</div>
         </div>
+
         <div class="story-arrow-line">↓</div>
-        <div class="story-row">
-            <div class="story-tag">🎯 핵심 처방</div>
-            <div class="story-body">
-                <div class="story-presc-box">
-                    <div class="story-presc-headline">지금 당신에게 가장 필요한 것은<br><span class="story-presc-keyword">「 ${prescKeyword} 」</span></div>
-                    <div class="story-presc-divider"></div>
-                    <div class="story-presc-why">${prescWhy}</div>
-                </div>
+
+        <div class="story-card">
+            <div class="story-card-tag">🎯 핵심 처방 · 챌린지 ${curCNum}번</div>
+            <div class="story-presc-box">
+                <div class="story-presc-headline">지금 당신에게 가장 필요한 것은<br><span class="story-presc-keyword">「 ${prescKeyword} 」</span></div>
+                <div class="story-presc-divider"></div>
+                <div class="story-presc-why">${prescWhy}</div>
             </div>
         </div>
+
     </div>`);
 
     // 즉시 통합 진단 리포트 출력 (질문/선택 버튼 없음)
