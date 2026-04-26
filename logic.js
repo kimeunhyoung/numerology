@@ -321,20 +321,30 @@ function startAnalysis() {
     const mt = reduceToSingle(lp + dt, true);
 
     document.getElementById("v-lp").innerText = `${lp}(${lpS})`;
-    document.getElementById("v-dt").innerText = dt;
-    document.getElementById("v-su").innerText = su;
-    document.getElementById("v-ps").innerText = ps;
-    document.getElementById("v-mt").innerText = mt;
     document.getElementById("v-mn").innerText = `${mn}(${mnS})`;
 
-    setHtml("coreDescArea", [
+    const hasName = name && name.trim().length > 0;
+    const nameCardsEl = document.getElementById("nameNumberCards");
+    if (nameCardsEl) nameCardsEl.style.display = hasName ? "contents" : "none";
+
+    if (hasName) {
+        document.getElementById("v-dt").innerText = dt;
+        document.getElementById("v-su").innerText = su;
+        document.getElementById("v-ps").innerText = ps;
+        document.getElementById("v-mt").innerText = mt;
+    }
+
+    const coreItems = [
         { k: "인생여정수", v: lp },
         { k: "문 넘버", v: mn },
-        { k: "혼의 수", v: su },
-        { k: "성격수", v: ps },
-        { k: "완성수", v: mt },
-        { k: "운명수", v: dt }
-    ].map(i => {
+        ...(hasName ? [
+            { k: "혼의 수", v: su },
+            { k: "성격수", v: ps },
+            { k: "완성수", v: mt },
+            { k: "운명수", v: dt }
+        ] : [])
+    ];
+    setHtml("coreDescArea", coreItems.map(i => {
         const desc = i.k === "문 넘버" ? (MOON_MAP[i.v] || "") : (DEEP_MAP[i.v] || "");
         return `
             <div class="accordion">
