@@ -699,12 +699,6 @@ function startAnalysis() {
     document.getElementById("luckAction").innerText = tip.a;
     document.getElementById("luckCaution").innerText = tip.c;
 
-    function generateComboComment(lpNum, pyNum) {
-        if (lpNum === pyNum) return INTERPRETATION_TEXTS.comboCommentMatch.replace("{num}", lpNum);
-        if (pyNum === 7) return INTERPRETATION_TEXTS.comboCommentYear7.replace("{lp}", lpNum);
-        return INTERPRETATION_TEXTS.comboCommentDefault.replace("{lp}", lpNum).replace("{py}", pyNum);
-    }
-    document.getElementById("specialComment").innerText = generateComboComment(lp, py);
 
     document.getElementById("resultView").style.display = "block";
     document.getElementById("finalDownloadBtn").style.display = "flex";
