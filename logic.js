@@ -34,6 +34,42 @@ const {
 const isPWA = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 const storage = isPWA ? window.localStorage : window.sessionStorage;
 
+// Robust token setter that tries multiple storage fallbacks (useful when browser blocks storage)
+function setTokenFallback(token) {
+    let stored = false;
+    try {
+        storage.setItem("token", token);
+        stored = true;
+    } catch (e) {
+        console.warn("primary storage set failed", e);
+    }
+    if (!stored) {
+        try {
+            window.localStorage.setItem("token", token);
+            stored = true;
+        } catch (e) {
+            console.warn("localStorage set failed", e);
+        }
+    }
+    if (!stored) {
+        try {
+            window.sessionStorage.setItem("token", token);
+            stored = true;
+        } catch (e) {
+            console.warn("sessionStorage set failed", e);
+        }
+    }
+    if (!stored) {
+        try {
+            document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}`;
+            stored = true;
+        } catch (e) {
+            console.warn("cookie set failed", e);
+        }
+    }
+    return stored;
+}
+
 document.addEventListener("DOMContentLoaded", checkAuth);
 
 function showToast(message, type = "warn", duration = 2200) {
@@ -61,9 +97,18 @@ async function checkAuth() {
     const container = document.querySelector(".container");
 
     if (!token) {
-        loginView.style.display = "block";
-        container.style.display = "none";
-        return;
+        // If running locally (dev) or opened via file protocol, try to auto-set a local dev token
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:") {
+            const ok = setTokenFallback("local-dev-token");
+            if (ok) {
+                token = "local-dev-token";
+            }
+        }
+        if (!token) {
+            loginView.style.display = "block";
+            container.style.display = "none";
+            return;
+        }
     }
 
     loginView.style.display = "none";
