@@ -187,6 +187,8 @@
         .cycle-block.active .cycle-header-acc::after { transform: rotate(180deg); }
         .cycle-content-acc { display: none; padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
         .cycle-block.active .cycle-content-acc { display: block; }
+        /* Ensure any <b> or <strong> inside cycle accordion content doesn't force entire paragraph bold */
+        .cycle-content-acc b, .cycle-content-acc strong { font-weight: 400; color: inherit; }
         .cy-info-row { display:flex; align-items:baseline; gap:6px; margin-bottom:4px; }
         .cycle-label-p { font-weight: bold; color: var(--blue); font-size: 0.78rem; white-space:nowrap; }
         .cycle-label-c { font-weight: bold; color: var(--red); font-size: 0.78rem; white-space:nowrap; margin-top:8px; }
