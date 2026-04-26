@@ -208,9 +208,12 @@
         .loshu-label { font-size: 0.65rem; color: #666; position: absolute; top: 8px; font-weight: bold; text-align: center; width: 100%; }
         .loshu-nums { font-size: 1.5rem; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
         .loshu-report-card { background: rgba(15,18,32,0.96); padding: 10px 12px; border-radius: 10px; border-left: 3px solid var(--accent); margin-bottom: 8px; border: 1px solid var(--glass-border); backdrop-filter: blur(6px); }
-        .loshu-report-card h5 { margin: 0 0 5px 0; font-size: 0.85rem; color: var(--teal); }
-        .loshu-item { font-size: 0.83rem; color: #ccc; margin-bottom: 6px; line-height: 1.55; }
-        .loshu-point { color: var(--gold); font-weight: bold; }
+        .loshu-report-card h5 { margin: 0 0 6px 0; font-size: 0.86rem; color: var(--gold); font-weight:700; }
+        /* Loshu item: ensure label (bold) and description (normal) have distinct styles */
+        .loshu-item { font-size: 0.84rem; color: #e8e3f2; margin-bottom: 8px; line-height: 1.6; font-weight: 400; }
+        .loshu-item b, .loshu-item strong { display: block; font-weight: 700; color: var(--gold); margin-bottom: 6px; font-size: 0.88rem; }
+        .loshu-item .loshu-desc { display: block; font-weight: 400; color: #dcd6e8; margin-top: 2px; line-height:1.6; }
+        .loshu-point { color: var(--gold); font-weight: 700; }
 
         /* 심층 상담 스타일 */
         .deep-question { color: var(--gold); font-weight: 800; font-size: 1rem; margin-bottom: 12px; display:block; }
@@ -603,7 +606,7 @@
     </div>
 </div>
 
-<script src="./data.js"></script>
-<script src="./logic.js"></script>
+<script src="./data.js?v=20260427T0033"></script>
+<script src="./logic.js?v=20260427T0033"></script>
 </body>
 </html>
