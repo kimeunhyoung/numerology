@@ -591,11 +591,9 @@ function startAnalysis() {
     finalHtml += `
     <div class="loshu-report-card" style="border-left-color:#fbc531;background:rgba(251,197,49,0.04);">
         <h5 style="color:#fbc531;">💡 핵심 성장 전략</h5>
-        <div class="desc-content">
-            <p style="margin-bottom:8px;">${INTERPRETATION_TEXTS.loshuCoreStructurePrefix} ${has(5) ? INTERPRETATION_TEXTS.loshuCoreStructureWith5 : INTERPRETATION_TEXTS.loshuCoreStructureWithout5}</p>
-            ${(has(9) && has(5) && has(1)) ? `<p style="margin-bottom:8px;">${INTERPRETATION_TEXTS.loshuSuccessArrow}</p>` : ""}
-            <p><b>📍 최종 솔루션:</b> ${solutionTxt}</p>
-        </div>
+        <div class="loshu-item">${INTERPRETATION_TEXTS.loshuCoreStructurePrefix} ${has(5) ? INTERPRETATION_TEXTS.loshuCoreStructureWith5 : INTERPRETATION_TEXTS.loshuCoreStructureWithout5}</div>
+        ${(has(9) && has(5) && has(1)) ? `<div class="loshu-item">${INTERPRETATION_TEXTS.loshuSuccessArrow}</div>` : ""}
+        <div class="loshu-item"><b>📍 최종 솔루션:</b> ${solutionTxt}</div>
     </div>`;
     setHtml("loshuAnalysis", finalHtml);
 
@@ -606,7 +604,7 @@ function startAnalysis() {
             const arrowEl = document.getElementById("loshuAnalysis");
             const arrowHtml = arrowKeys.map(k => {
                 const info = (LOSHU_ARROWS && LOSHU_ARROWS[k]) || null;
-                return info ? `<div class="loshu-report-card" style="border-left-color:var(--gold);background:rgba(217,177,111,0.04);"><h5 style="color:var(--gold);">⚡ 피타고라스 화살표 ${k}</h5><div class="desc-content">${info}</div></div>` : "";
+                return info ? `<div class="loshu-report-card" style="border-left-color:var(--gold);background:rgba(217,177,111,0.04);"><h5 style="color:var(--gold);">⚡ 피타고라스 화살표 ${k}</h5><div class="loshu-item">${info}</div></div>` : "";
             }).join("");
             if (arrowEl) arrowEl.innerHTML = arrowEl.innerHTML + arrowHtml;
         }
