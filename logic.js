@@ -71,7 +71,12 @@ function setTokenFallback(token) {
     return stored;
 }
 
-document.addEventListener("DOMContentLoaded", checkAuth);
+// 동적 로드 시 DOMContentLoaded가 이미 지났을 수 있으므로 즉시 실행
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", checkAuth);
+} else {
+    checkAuth();
+}
 
 function showToast(message, type = "warn", duration = 2200) {
     const toast = document.createElement("div");
