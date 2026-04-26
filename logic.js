@@ -442,7 +442,7 @@ function startAnalysis() {
 
         <div class="story-card">
             <div class="story-card-tag">📍 현재 환경 · 인생 ${curStageIdx + 1}단계 피나클 ${curPNum}번</div>
-            <div class="story-card-desc">${P_DETAIL[curPNum] || ""}</div>
+            <div class="story-card-desc"><b>[피나클 ${curPNum}번] ${TITLE_MAP[curPNum] || ""}</b>${P_DETAIL[curPNum] || ""}</div>
         </div>
 
         <div class="story-arrow-line">↓</div>
