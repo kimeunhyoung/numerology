@@ -615,7 +615,8 @@ function startAnalysis() {
     if (LOSHU_INTENSITY_RULES) {
         LOSHU_INTENSITY_RULES.forEach(rule => {
             if (counts[rule.digit] >= rule.minCount) {
-                intensityTxt += rule.text.replace('${count}', counts[rule.digit]);
+                // Support both literal '${count}' and legacy '__COUNT__' placeholders
+                intensityTxt += rule.text.replace(/\$\{count\}/g, String(counts[rule.digit])).replace(/__COUNT__/g, String(counts[rule.digit]));
             }
         });
     }
