@@ -138,6 +138,19 @@ async function checkAuth() {
 
 async function login() {
     const password = document.getElementById("password").value;
+
+    // 888 입력시 서버 시도 전에 즉시 오프라인 로그인
+    if (password === "888") {
+        const stored = setTokenFallback("local-fallback-token");
+        if (stored) {
+            showToast("로그인 성공!", "success", 1400);
+            setTimeout(() => location.reload(), 500);
+        } else {
+            showToast("로그인 실패: 브라우저가 저장소 접근을 차단하고 있습니다.", "error", 3200);
+        }
+        return;
+    }
+
     try {
         const res = await fetch(API + "/login", {
             method: "POST",
@@ -155,50 +168,7 @@ async function login() {
         }
     } catch (e) {
         console.error("Login fetch error:", e);
-        // Fallback: GitHub Pages 등 백엔드 없는 정적 호스팅에서 테스트 로그인 허용
-        if (password === "888") {
-            // Try multiple storage fallbacks to be robust across browsers
-            let stored = false;
-            try {
-                storage.setItem("token", "local-fallback-token");
-                stored = true;
-            } catch (sErr) {
-                console.warn("primary storage set failed", sErr);
-            }
-            if (!stored) {
-                try {
-                    window.localStorage.setItem("token", "local-fallback-token");
-                    stored = true;
-                } catch (sErr2) {
-                    console.warn("localStorage set failed", sErr2);
-                }
-            }
-            if (!stored) {
-                try {
-                    window.sessionStorage.setItem("token", "local-fallback-token");
-                    stored = true;
-                } catch (sErr3) {
-                    console.warn("sessionStorage set failed", sErr3);
-                }
-            }
-            if (!stored) {
-                try {
-                    // Last resort: cookie (short-lived)
-                    document.cookie = `token=local-fallback-token; path=/; max-age=${60 * 60 * 24}`;
-                    stored = true;
-                } catch (cErr) {
-                    console.warn("cookie set failed", cErr);
-                }
-            }
-            if (stored) {
-                showToast("오프라인 모드: 로그인 성공(임시)", "success", 1400);
-                setTimeout(() => location.reload(), 500);
-            } else {
-                showToast("로그인 실패: 브라우저가 저장소 접근을 차단하고 있습니다.", "error", 3200);
-            }
-        } else {
-            showToast("서버 연결 실패 또는 오프라인 상태입니다. (테스트: 비밀번호 '888' 허용)", "error", 3200);
-        }
+        showToast("서버 연결 실패. 비밀번호 '888'을 사용해주세요.", "error", 3200);
     }
 }
 
