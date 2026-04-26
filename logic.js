@@ -401,6 +401,11 @@ function startAnalysis() {
 
                     this.style.display = "none";
 
+                    const fmtReport = cd.report
+                        .split("\n\n")
+                        .map(para => `<p style="margin:0 0 7px 0;">${para.replace(/\n/g, "<br>")}</p>`)
+                        .join("");
+
                     reportEl.innerHTML = `
                         <div style="font-size:0.78rem;color:var(--gold);font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(217,177,111,0.15);">✦ ${pinnacleEnv} × ${cd.name} — 심층 진단 리포트</div>
                         <div style="border-left:2px solid var(--teal);padding:6px 10px;margin-bottom:8px;">
@@ -409,7 +414,7 @@ function startAnalysis() {
                         </div>
                         <div style="border-left:2px solid var(--gold);padding:6px 10px;">
                             <span style="font-size:0.72rem;color:var(--gold);font-weight:700;">🎯 핵심 과제 (Challenge ${challengeNum}) — ${cd.name}</span>
-                            <div style="font-size:0.84rem;color:#efe9e3;line-height:1.75;white-space:pre-wrap;margin-top:3px;">${cd.report}</div>
+                            <div style="font-size:0.84rem;color:#efe9e3;line-height:1.7;margin-top:5px;">${fmtReport}</div>
                         </div>`;
                     reportEl.style.display = "block";
                     reportEl.scrollIntoView({ behavior: "smooth", block: "center" });
