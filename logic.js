@@ -4,31 +4,32 @@ const API = (() => {
     return isLocal3000 ? origin : "https://numerology-app-w6rq.onrender.com";
 })();
 
+const _ND = window.NUMEROLOGY_DATA || {};
 const {
-    TITLE_MAP,
-    TL_KEYWORD,
-    FLOW_PHRASE,
-    TODAY_INSIGHT,
-    TL_COLOR,
-    TL_DESC,
-    DEEP_MAP,
-    MOON_MAP,
-    P_DETAIL,
-    C_DETAIL,
-    QUESTIONS,
-    GROWTH_DATA,
-    CHALLENGE_DATA,
-    YEAR_STRATEGY,
-    MONTHLY_KEYWORDS,
-    DAY_ADVICE,
-    DAILY_TIPS,
-    LOSHU_STRENGTH_RULES,
-    LOSHU_WEAKNESS_RULES,
-    LOSHU_INTENSITY_RULES,
-    INTERPRETATION_TEXTS,
-    LOSHU_ARROWS,
-    getZodiacInfo
-} = window.NUMEROLOGY_DATA;
+    TITLE_MAP = {},
+    TL_KEYWORD = {},
+    FLOW_PHRASE = {},
+    TODAY_INSIGHT = {},
+    TL_COLOR = {},
+    TL_DESC = {},
+    DEEP_MAP = {},
+    MOON_MAP = {},
+    P_DETAIL = {},
+    C_DETAIL = {},
+    QUESTIONS = {},
+    GROWTH_DATA = {},
+    CHALLENGE_DATA = {},
+    YEAR_STRATEGY = {},
+    MONTHLY_KEYWORDS = {},
+    DAY_ADVICE = {},
+    DAILY_TIPS = {},
+    LOSHU_STRENGTH_RULES = [],
+    LOSHU_WEAKNESS_RULES = [],
+    LOSHU_INTENSITY_RULES = [],
+    INTERPRETATION_TEXTS = {},
+    LOSHU_ARROWS = {},
+    getZodiacInfo = function(){ return {n:'미지', i:'✨', t:''}; }
+} = _ND;
 
 // PWA(홈 화면 추가) 앱인지 일반 웹인지 판별하여 저장소 결정
 const isPWA = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
