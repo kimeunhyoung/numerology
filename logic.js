@@ -376,13 +376,12 @@ function startAnalysis() {
     ];
     setHtml("mainCycleGrid", majorCards.map((mc, i) => `
         <div class="cycle-mini-card ${i === curMajorIdx ? 'cycle-mini-active' : ''}">
-            ${i === curMajorIdx ? '<div class="cycle-mini-now">▶ 현재</div>' : ''}
             <span>${mc.label}</span>
             <strong>${mc.num}</strong>
             <div class="cycle-mini-range">${mc.range}</div>
         </div>`).join(""));
     setHtml("mainCycleArea", [{ t: "첫 번째 주기", a: `0~${age1}세`, v: mr_r, q: "인생의 전반기, 어떤 씨앗을 뿌려야 하는가?" }, { t: "두 번째 주기", a: `${age1 + 1}~${age1 + 27}세`, v: dr_r, q: "인생의 중반기, 어떤 꽃을 피워야 하는가?" }, { t: "세 번째 주기", a: `${age1 + 28}세~`, v: yr_r, q: "인생의 후반기, 어떤 열매를 거두어야 하는가?" }]
-        .map(c => `<div class="accordion"><div class="accordion-header"><h4>✦ ${c.t} ${c.v}번 (${c.a})</h4></div><div class="accordion-content"><span class="q-text">Q. ${c.q}</span><div class="desc-content">${DEEP_MAP[c.v] || ""}</div></div></div>`)
+        .map((c, i) => `<div class="accordion"><div class="accordion-header"><h4>✦ ${c.t} ${c.v}번 (${c.a})${i === curMajorIdx ? ' <span class="major-now-badge">현재</span>' : ''}</h4></div><div class="accordion-content"><span class="q-text">Q. ${c.q}</span><div class="desc-content">${DEEP_MAP[c.v] || ""}</div></div></div>`)
         .join(""));
 
     const p1 = reduceToSingle(mr_r + dr_r, true);
