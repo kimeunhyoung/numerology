@@ -120,18 +120,18 @@
         button:hover { filter: brightness(1.06); }
         button:active { transform: translateY(1px); }
         .section-title {
-            font-size: 1.16rem;
+            font-size: 1rem;
             color: var(--gold-soft);
-            border-left: 3px solid var(--gold);
-            padding-left: 12px;
-            margin: 34px 0 16px;
+            border-left: 2px solid var(--gold);
+            padding-left: 10px;
+            margin: 20px 0 10px;
             font-weight: 700;
             letter-spacing: 0.2px;
         }
-        .cycle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .cycle-mini-card { background: rgba(20,24,42,0.92); padding: 15px 5px; border-radius: 14px; text-align: center; border: 1px solid var(--glass-border); backdrop-filter: blur(8px); }
-        .cycle-mini-card span { display: block; font-size: 0.76rem; color: #d6cfea; margin-bottom: 8px; }
-        .cycle-mini-card strong { font-size: 1.4rem; color: var(--accent); display: block; }
+        .cycle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 10px; }
+        .cycle-mini-card { background: rgba(20,24,42,0.92); padding: 8px 5px; border-radius: 10px; text-align: center; border: 1px solid var(--glass-border); backdrop-filter: blur(8px); }
+        .cycle-mini-card span { display: block; font-size: 0.7rem; color: #d6cfea; margin-bottom: 4px; }
+        .cycle-mini-card strong { font-size: 1.2rem; color: var(--accent); display: block; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .card {
             background: rgba(20,24,42,0.92);
@@ -148,14 +148,14 @@
         .zodiac-card { grid-column: span 3; padding: 20px; border-color: var(--gold); margin-bottom: 5px; }
         .zodiac-name { font-size: 1.6rem; color: #ffca28; font-weight: 900; display: block; margin-bottom: 5px; }
         .zodiac-desc { font-size: 0.95rem; color: var(--teal); font-weight: 600; line-height: 1.4; }
-        .accordion { margin-bottom: 12px; border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-border); background: rgba(20,24,42,0.92); backdrop-filter: blur(8px); }
-        .accordion-header { background: rgba(255,255,255,0.04); padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .accordion-header h4 { margin: 0; font-size: 0.95rem; color: var(--teal); }
-        .accordion-header::after { content: '▼'; font-size: 0.7rem; color: var(--gold); transition: 0.3s; }
+        .accordion { margin-bottom: 7px; border-radius: 10px; overflow: hidden; border: 1px solid var(--glass-border); background: rgba(20,24,42,0.92); backdrop-filter: blur(8px); }
+        .accordion-header { background: rgba(255,255,255,0.04); padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-header h4 { margin: 0; font-size: 0.88rem; color: var(--teal); }
+        .accordion-header::after { content: '▼'; font-size: 0.65rem; color: var(--gold); transition: 0.3s; }
         .accordion.active .accordion-header::after { transform: rotate(180deg); }
-        .accordion-content { background: rgba(13,15,28,0.92); display: none; padding: 18px; border-top: 1px solid rgba(255,255,255,0.16); }
+        .accordion-content { background: rgba(13,15,28,0.92); display: none; padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.1); }
         .accordion.active .accordion-content { display: block; }
-        .q-text { font-size: 0.84rem; color: var(--gold-soft); display: block; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.24); padding-bottom: 4px; }
+        .q-text { font-size: 0.8rem; color: var(--gold-soft); display: block; margin-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 3px; }
         .desc-content {
             font-size: 0.88rem;
             font-weight: 400;
@@ -167,31 +167,38 @@
         .kw { color: var(--accent); font-weight: bold; }
         .legend-item, .yc-year, .yc-desc, .bar-year, .bar-energy { color: #d6cde6; }
         .loshu-label { color: #bfb5d3; }
-        .table-wrapper { overflow-x: auto; margin-bottom: 20px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(15,18,32,0.96); backdrop-filter: blur(6px); }
+        .table-wrapper { overflow-x: auto; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(15,18,32,0.96); backdrop-filter: blur(6px); }
         table { width: 100%; border-collapse: collapse; min-width: 300px; }
-        th { background: rgba(255,255,255,0.12); color: #f7dfb5; padding: 12px 8px; font-size: 0.87rem; border-bottom: 1px solid rgba(255,255,255,0.2); }
-        td { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.14); text-align: center; font-size: 0.92rem; color: #f5f3f9; }
+        th { background: rgba(255,255,255,0.1); color: #f7dfb5; padding: 7px 6px; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        td { padding: 7px 6px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.85rem; color: #f5f3f9; }
         .p-num { color: var(--blue); font-weight: bold; }
         .c-num { color: var(--red); font-weight: bold; }
-        .cycle-block { margin-bottom: 15px; padding: 0; background: rgba(20,24,42,0.94); border-radius: 14px; border: 1px solid var(--glass-border); overflow: hidden; backdrop-filter: blur(8px); }
-        .cycle-header-acc { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.06); }
-        .cycle-header-acc span { font-size: 0.95rem; color: var(--teal); font-weight: bold; }
-        .cycle-header-acc::after { content: '▼'; font-size: 0.7rem; color: var(--gold); transition: 0.3s; }
+        .cycle-block { margin-bottom: 7px; padding: 0; background: rgba(20,24,42,0.94); border-radius: 10px; border: 1px solid var(--glass-border); overflow: hidden; backdrop-filter: blur(8px); }
+        .cycle-header-acc { padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); }
+        .cycle-header-acc .cy-hd-left { display:flex; align-items:center; gap:8px; }
+        .cycle-header-acc .cy-hd-stage { font-size: 0.88rem; color: var(--teal); font-weight: bold; }
+        .cycle-header-acc .cy-hd-age { font-size: 0.72rem; color: var(--muted); }
+        .cycle-header-acc .cy-hd-badges { display:flex; gap:5px; align-items:center; }
+        .cy-badge-p { font-size:0.68rem; font-weight:700; color:var(--blue); background:rgba(125,166,255,0.12); border:1px solid rgba(125,166,255,0.25); border-radius:5px; padding:1px 6px; }
+        .cy-badge-c { font-size:0.68rem; font-weight:700; color:var(--red); background:rgba(255,143,143,0.12); border:1px solid rgba(255,143,143,0.25); border-radius:5px; padding:1px 6px; }
+        .cycle-header-acc::after { content: '▼'; font-size: 0.65rem; color: var(--gold); transition: 0.3s; margin-left:8px; }
         .cycle-block.active .cycle-header-acc::after { transform: rotate(180deg); }
-        .cycle-content-acc { display: none; padding: 15px; border-top: 1px solid rgba(255,255,255,0.16); }
+        .cycle-content-acc { display: none; padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
         .cycle-block.active .cycle-content-acc { display: block; }
-        .cycle-label-p { font-weight: bold; color: var(--blue); font-size: 0.85rem; }
-        .cycle-label-c { font-weight: bold; color: var(--red); font-size: 0.85rem; }
-        .cycle-text { font-size: 0.88rem; color: #ddd; display: block; margin-top: 4px; border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 12px; }
-        .loshu-wrap { background: rgba(20,24,42,0.94); padding: 25px; border-radius: 22px; border: 1px solid var(--glass-border); margin-top: 10px; margin-bottom: 20px; backdrop-filter: blur(8px); }
-        .loshu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 300px; margin: 0 auto 25px; }
+        .cy-info-row { display:flex; align-items:baseline; gap:6px; margin-bottom:4px; }
+        .cycle-label-p { font-weight: bold; color: var(--blue); font-size: 0.78rem; white-space:nowrap; }
+        .cycle-label-c { font-weight: bold; color: var(--red); font-size: 0.78rem; white-space:nowrap; margin-top:8px; }
+        .cy-title-text { font-size:0.78rem; color:var(--gold); }
+        .cycle-text { font-size: 0.83rem; color: #ccc; display: block; margin-top: 2px; padding-left: 8px; margin-bottom: 8px; line-height:1.55; border-left:2px solid rgba(143,99,255,0.3); }
+        .loshu-wrap { background: rgba(20,24,42,0.94); padding: 14px; border-radius: 14px; border: 1px solid var(--glass-border); margin-top: 6px; margin-bottom: 12px; backdrop-filter: blur(8px); }
+        .loshu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; max-width: 260px; margin: 0 auto 12px; }
         .loshu-cell { aspect-ratio: 1/1; background: rgba(14,17,31,0.96); border: 1px solid var(--glass-border); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; transition: 0.4s; backdrop-filter: blur(6px); }
         .loshu-cell.active { border-color: var(--accent-2); background: rgba(143,99,255,0.16); box-shadow: 0 0 18px rgba(143,99,255,0.22); }
         .loshu-label { font-size: 0.65rem; color: #666; position: absolute; top: 8px; font-weight: bold; text-align: center; width: 100%; }
         .loshu-nums { font-size: 1.5rem; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
-        .loshu-report-card { background: rgba(15,18,32,0.96); padding: 20px; border-radius: 16px; border-left: 4px solid var(--accent); margin-bottom: 15px; border: 1px solid var(--glass-border); backdrop-filter: blur(6px); }
-        .loshu-report-card h5 { margin: 0 0 10px 0; font-size: 0.95rem; color: var(--teal); }
-        .loshu-item { font-size: 0.88rem; color: #ccc; margin-bottom: 10px; line-height: 1.6; }
+        .loshu-report-card { background: rgba(15,18,32,0.96); padding: 10px 12px; border-radius: 10px; border-left: 3px solid var(--accent); margin-bottom: 8px; border: 1px solid var(--glass-border); backdrop-filter: blur(6px); }
+        .loshu-report-card h5 { margin: 0 0 5px 0; font-size: 0.85rem; color: var(--teal); }
+        .loshu-item { font-size: 0.83rem; color: #ccc; margin-bottom: 6px; line-height: 1.55; }
         .loshu-point { color: var(--gold); font-weight: bold; }
 
         /* 심층 상담 스타일 */
@@ -201,14 +208,14 @@
         .deep-btn.under { background: linear-gradient(90deg, rgba(255,110,110,0.06), rgba(20,24,42,0.04)); color: var(--text); border:1px solid rgba(255,110,110,0.12); }
         .deep-actions { display:flex; gap:12px; margin-top:8px; margin-bottom:14px; }
         .deep-report { background: rgba(10,10,18,0.9); padding:18px; border-radius:12px; border:1px solid var(--glass-border); line-height:1.9; white-space:pre-wrap; font-size:0.95rem; color: #efe9e3; }
-        .cycle-deep-btn { padding:10px 12px; border-radius:10px; background: linear-gradient(90deg, var(--gold), var(--accent)); color: #111; font-weight:800; border: none; cursor: pointer; margin-top:12px; }
-        .cycle-deep-report { background: linear-gradient(180deg, rgba(14,17,31,0.96), rgba(20,24,42,0.96)); border: 1px solid rgba(217,177,111,0.12); padding:16px; border-radius:12px; margin-top:12px; line-height:1.9; white-space:pre-wrap; display:block; }
-        .deep-prompt-container { margin-top:10px; }
+        .cycle-deep-btn { padding:6px 10px; border-radius:8px; background: linear-gradient(90deg, var(--gold), var(--accent)); color: #111; font-weight:800; border: none; cursor: pointer; margin-top:8px; font-size:0.8rem; }
+        .cycle-deep-report { background: rgba(14,17,31,0.96); border: 1px solid rgba(217,177,111,0.15); padding:10px 12px; border-radius:10px; margin-top:8px; line-height:1.75; white-space:pre-wrap; display:block; }
+        .deep-prompt-container { margin-top:6px; }
 
         /* ── 10년 타임라인 새 스타일 ── */
-        .timeline-wrap { background: linear-gradient(135deg, rgba(26,30,52,0.95), rgba(38,28,61,0.92)); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 24px 24px; margin-bottom: 30px; position: relative; overflow: hidden; backdrop-filter: blur(6px); }
+        .timeline-wrap { background: linear-gradient(135deg, rgba(26,30,52,0.95), rgba(38,28,61,0.92)); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px 14px 12px; margin-bottom: 16px; position: relative; overflow: hidden; backdrop-filter: blur(6px); }
         .timeline-wrap::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(163,102,255,0.08), transparent 70%); pointer-events: none; }
-        .current-year-banner { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 14px 18px; background: rgba(15,18,34,0.96); border: 1px solid var(--glass-border); border-radius: 12px; backdrop-filter: blur(6px); }
+        .current-year-banner { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 8px 12px; background: rgba(15,18,34,0.96); border: 1px solid var(--glass-border); border-radius: 8px; backdrop-filter: blur(6px); }
         .chart-scroll { overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
         .chart-scroll::-webkit-scrollbar { display: none; }
         .chart-inner { display: flex; align-items: flex-end; gap: 8px; min-width: 560px; height: 180px; padding: 0 4px; position: relative; }
@@ -406,22 +413,15 @@
         </div>
         <div id="cycleArea"></div>
 
-        <!-- ── 심층 심리 상담 세션 (질문 → 선택 → 장문 리포트) ── -->
-        <div id="deepCounselSession" style="margin-top:22px;margin-bottom:28px;">
-            <div class="section-title" style="margin-top:6px;">🫂 심층 심리 상담 세션</div>
-            <div style="padding:14px 0 6px;">
-                <span id="deepQuestion" class="deep-question">질문을 불러오는 중입니다...</span>
-                <div class="deep-actions">
-                    <button id="deepBtnOver" class="deep-btn over">네, 그런 편이에요 (에너지 과잉)</button>
-                    <button id="deepBtnUnder" class="deep-btn under">아니요, 오히려 위축되어 있어요 (에너지 결핍)</button>
-                </div>
-                <div id="deepReportArea" class="deep-report" style="display:none;"></div>
-            </div>
+        <!-- 이전 심층 세션 UI – 현재 미사용 (각 단계별 심층 버튼으로 대체됨) -->
+        <div id="deepCounselSession" style="display:none;">
+            <span id="deepQuestion"></span>
+            <div id="deepReportArea"></div>
         </div>
 
         <!-- ── 개선: 개운법 → Growth Map ── -->
-        <div class="section-title" style="margin-top:40px;">📍 선천 성향 & 후천 보완 역량 진단 (Growth Map)</div>
-        <div class="accordion" style="margin-bottom:25px;">
+        <div class="section-title">📍 선천 성향 & 후천 보완 역량 진단 (Growth Map)</div>
+        <div class="accordion">
             <div class="accordion-header">
                 <h4>✦ 선천 미개발 역량 & 이름 보완 분석</h4>
             </div>
@@ -452,7 +452,7 @@
         <div id="yearHighlightArea"></div>
 
         <!-- ── 개선: 10년 타임라인 ── -->
-        <div class="section-title" style="margin-top:40px;">📈 나의 10년 라이프 타임라인</div>
+        <div class="section-title">📈 나의 10년 라이프 타임라인</div>
         <div class="timeline-wrap">
             <div class="current-year-banner" id="currentBanner"></div>
             <div class="chart-scroll">
@@ -469,8 +469,8 @@
 
         <div id="turningPointArea" style="margin-bottom:35px;"></div>
 
-        <div class="section-title" style="margin-top:40px;">🗓️ 2026년 월별 에너지 흐름</div>
-        <div id="monthlyForecastGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:30px;"></div>
+        <div class="section-title">🗓️ 월별 에너지 흐름</div>
+        <div id="monthlyForecastGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;"></div>
 
         <div class="section-title">📍 향후 7일간의 에너지 흐름</div>
         <div class="table-wrapper">

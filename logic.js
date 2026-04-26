@@ -99,7 +99,20 @@ async function login() {
             showToast("비밀번호가 틀렸습니다.", "error");
         }
     } catch (e) {
-        showToast("서버 연결 실패. 인터넷을 확인하세요.", "error", 2600);
+        // Fallback: GitHub Pages 등 백엔드 없는 정적 호스팅에서 테스트 로그인 허용
+        if (password === "888") {
+            try {
+                const store = (typeof storage !== "undefined") ? storage : (window.localStorage || window.sessionStorage);
+                store.setItem("token", "local-fallback-token");
+                showToast("로그인 성공!", "success", 1400);
+                setTimeout(() => location.reload(), 500);
+            } catch (sErr) {
+                // storage 접근 불가 시 sessionStorage 직접 사용
+                try { window.sessionStorage.setItem("token", "local-fallback-token"); location.reload(); } catch(e2) { showToast("로그인 실패: 브라우저 설정을 확인하세요.", "error", 2600); }
+            }
+        } else {
+            showToast("서버 연결 실패. 비밀번호를 확인하세요.", "error", 2600);
+        }
     }
 }
 
@@ -368,9 +381,9 @@ function startAnalysis() {
     const c4 = reduceToSingle(Math.abs(mr_r - yr_r), true);
     const cyData = [{ s: "1단계", a: `0~${age1}`, p: p1, c: c1 }, { s: "2단계", a: `${age1 + 1}~${age1 + 9}`, p: p2, c: c2 }, { s: "3단계", a: `${age1 + 10}~${age1 + 18}`, p: p3, c: c3 }, { s: "4단계", a: `${age1 + 19}~`, p: p4, c: c4 }];
     setHtml("tableBody", cyData.map(c => `<tr><td>${c.s}</td><td>${c.a}</td><td class="p-num">${c.p}</td><td class="c-num">${c.c}</td></tr>`).join(""));
-    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><span>제${i + 1}단계: ${TITLE_MAP[c.p] || ""}</span></div><div class="cycle-content-acc"><span class="cycle-label-p">환경(절정) ${c.p}번</span><span class="cycle-text">${P_DETAIL[c.p] || ""}</span><span class="cycle-label-c">과제(도전) ${c.c}번</span><span class="cycle-text">${C_DETAIL[c.c] || ""}</span><button class="cycle-deep-btn" data-cycle-index="${i}">현재 주기 심층 분석 받기</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
+    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><div class="cy-hd-left"><span class="cy-hd-stage">${c.s} (${c.a}세)</span><span class="cy-hd-age">${TITLE_MAP[c.p] || ""}</span></div><div class="cy-hd-badges"><span class="cy-badge-p">P${c.p}</span><span class="cy-badge-c">C${c.c}</span></div></div><div class="cycle-content-acc"><div class="cy-info-row"><span class="cycle-label-p">📍 환경 ${c.p}번</span></div><span class="cycle-text">${P_DETAIL[c.p] || ""}</span><div class="cy-info-row"><span class="cycle-label-c">🎯 과제 ${c.c}번</span></div><span class="cycle-text">${C_DETAIL[c.c] || ""}</span><button class="cycle-deep-btn" data-cycle-index="${i}">심층 진단 리포트 →</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
 
-    // Attach per-cycle deep analysis handlers
+    // 즉시 통합 진단 리포트 출력 (질문/선택 버튼 없음)
     (function attachCycleDeepHandlers() {
         try {
             document.querySelectorAll(".cycle-deep-btn").forEach(btn => {
@@ -379,51 +392,27 @@ function startAnalysis() {
                     const cycle = cyData[idx];
                     const pinnacleNum = Number(cycle.p) || 1;
                     const challengeNum = Number(cycle.c) || 0;
-                    const cd = (CHALLENGE_DATA && CHALLENGE_DATA[challengeNum]) || { name: "알 수 없는 과제", q: "질문을 불러올 수 없습니다.", excess: "", deficiency: "" };
+                    const cd = (CHALLENGE_DATA && CHALLENGE_DATA[challengeNum]) || { name: "알 수 없는 과제", report: "데이터를 불러올 수 없습니다." };
                     const pinnacleEnv = TITLE_MAP[pinnacleNum] || "알 수 없는 환경";
+                    const pinnacleDesc = P_DETAIL[pinnacleNum] || "";
 
-                    const promptEl = document.getElementById(`cycleDeepPrompt-${idx}`);
                     const reportEl = document.getElementById(`cycleDeepReport-${idx}`);
-                    if (!promptEl || !reportEl) return;
+                    if (!reportEl) return;
 
-                    // 피나클 + 챌린지 조합 설명과 질문 렌더링
-                    promptEl.innerHTML = `
-                        <div style="background:rgba(217,177,111,0.05);padding:12px;border-radius:8px;margin-bottom:12px;border:1px solid rgba(217,177,111,0.2);">
-                            <div style="font-size:0.85rem;color:var(--gold);font-weight:600;margin-bottom:6px;">
-                                현재 환경: ${pinnacleEnv} + 인생 과제: ${cd.name}
-                            </div>
-                            <div style="font-size:0.82rem;color:var(--text);line-height:1.6;">
-                                이 시기는 <span style="color:var(--teal);">${pinnacleEnv.replace('의 시기', '')} 환경</span>에서 <span style="color:var(--gold);">'${cd.name}'</span>라는 과제를 해결해야 하는 중요한 국면입니다.
-                            </div>
+                    this.style.display = "none";
+
+                    reportEl.innerHTML = `
+                        <div style="font-size:0.78rem;color:var(--gold);font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(217,177,111,0.15);">✦ ${pinnacleEnv} × ${cd.name} — 심층 진단 리포트</div>
+                        <div style="border-left:2px solid var(--teal);padding:6px 10px;margin-bottom:8px;">
+                            <span style="font-size:0.72rem;color:var(--teal);font-weight:700;">📍 현재 환경 (Pinnacle ${pinnacleNum})</span>
+                            <div style="font-size:0.82rem;color:#ccc;line-height:1.6;margin-top:3px;">${pinnacleDesc}</div>
                         </div>
-                        <div class="deep-question" style="margin:0 0 8px 0;">${cd.q}</div>
-                        <div style="display:flex;gap:10px;">
-                            <button class="deep-btn over" id="cycle_yes_${idx}">네, 그런 편이에요 (과잉)</button>
-                            <button class="deep-btn under" id="cycle_no_${idx}">아니요, 오히려 위축되어 있어요 (결핍)</button>
+                        <div style="border-left:2px solid var(--gold);padding:6px 10px;">
+                            <span style="font-size:0.72rem;color:var(--gold);font-weight:700;">🎯 핵심 과제 (Challenge ${challengeNum}) — ${cd.name}</span>
+                            <div style="font-size:0.84rem;color:#efe9e3;line-height:1.75;white-space:pre-wrap;margin-top:3px;">${cd.report}</div>
                         </div>`;
-
-                    reportEl.innerHTML = "";
-                    reportEl.style.display = "none";
-
-                    // handlers
-                    const yesBtn = document.getElementById(`cycle_yes_${idx}`);
-                    const noBtn = document.getElementById(`cycle_no_${idx}`);
-                    const finalize = (mode) => {
-                        const heading = `<h4 style="margin:0 0 12px 0;color:var(--gold);font-size:1.05rem;">[${pinnacleEnv} × ${cd.name}] 전문 상담 리포트</h4>`;
-                        const body = mode === "excess" ? cd.excess : cd.deficiency;
-                        reportEl.innerHTML = `${heading}<div style="font-size:0.95rem;line-height:1.9;color:#efe9e3;white-space:pre-wrap;">${body}</div>`;
-                        reportEl.style.display = "block";
-                        // remove prompt buttons to avoid duplicate answers
-                        promptEl.innerHTML = `
-                            <div style="background:rgba(46,213,115,0.08);padding:10px;border-radius:8px;border:1px solid rgba(46,213,115,0.2);">
-                                <div style="font-size:0.88rem;color:var(--teal);font-weight:600;">✅ 상담이 완료되었습니다</div>
-                                <div style="font-size:0.8rem;color:var(--muted);margin-top:4px;">아래 전문 처방을 확인하고 실천해보세요.</div>
-                            </div>`;
-                        reportEl.scrollIntoView({ behavior: "smooth", block: "center" });
-                    };
-
-                    if (yesBtn) yesBtn.onclick = () => finalize("excess");
-                    if (noBtn) noBtn.onclick = () => finalize("deficiency");
+                    reportEl.style.display = "block";
+                    reportEl.scrollIntoView({ behavior: "smooth", block: "center" });
                 };
             });
         } catch (e) {
@@ -439,14 +428,14 @@ function startAnalysis() {
 
     let missingHtml = "";
     if (karmicLessons.length === 0) {
-        missingHtml = `<p style="font-size:0.85rem;color:var(--muted);">${INTERPRETATION_TEXTS.growthMapAllActive}</p>`;
+        missingHtml = `<p style="font-size:0.82rem;color:var(--muted);">${INTERPRETATION_TEXTS.growthMapAllActive}</p>`;
     } else {
-        missingHtml += `<div style="margin-bottom:18px;"><span style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:10px;">📌 출생 데이터(생년월일)에 나타나지 않는 숫자는 선천적으로 덜 활성화된 성향 영역입니다. 이름(후천적 환경)이 어느 정도 보완하고 있는지 함께 분석합니다.</span>${karmicLessons.map(n => `<div style="margin-bottom:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px;border:1px solid #333;"><strong style="color:var(--teal);font-size:0.9rem;">● ${n}번 ${GROWTH_DATA[n].t}</strong><span style="font-size:0.85rem;color:#ccc;display:block;margin-top:4px;">${GROWTH_DATA[n].d}</span></div>`).join("")}</div>`;
+        missingHtml += `<div style="margin-bottom:10px;"><span style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:6px;">📌 생년월일에 없는 숫자 = 선천적 미활성 영역. 이름이 보완하는지 함께 분석합니다.</span>${karmicLessons.map(n => `<div style="margin-bottom:6px;padding:7px 10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid #2a2a3a;"><strong style="color:var(--teal);font-size:0.83rem;">● ${n}번 ${GROWTH_DATA[n].t}</strong><span style="font-size:0.8rem;color:#bbb;display:block;margin-top:2px;">${GROWTH_DATA[n].d}</span></div>`).join("")}</div>`;
         if (compensated.length > 0) {
-            missingHtml += `<div style="margin-bottom:18px;padding:15px;background:rgba(46,213,115,0.05);border-radius:12px;border:1px solid rgba(46,213,115,0.3);"><span style="color:var(--teal);font-size:0.85rem;font-weight:bold;display:block;margin-bottom:8px;">✅ 후천적으로 보완된 역량</span><span style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:10px;">이름(언어 환경)이 자연스럽게 이 에너지를 채워주고 있습니다.</span>${compensated.map(n => `<div style="margin-bottom:6px;"><strong style="color:var(--teal);font-size:0.88rem;">● ${n}번 ${GROWTH_DATA[n].t} ✅</strong></div>`).join("")}</div>`;
+            missingHtml += `<div style="margin-bottom:8px;padding:8px 10px;background:rgba(46,213,115,0.04);border-radius:8px;border:1px solid rgba(46,213,115,0.25);"><span style="color:var(--teal);font-size:0.8rem;font-weight:bold;display:block;margin-bottom:4px;">✅ 후천적 보완 역량</span><span style="font-size:0.74rem;color:var(--muted);display:block;margin-bottom:6px;">이름(언어 환경)이 자연스럽게 채워주고 있습니다.</span>${compensated.map(n => `<div style="margin-bottom:3px;"><strong style="color:var(--teal);font-size:0.82rem;">● ${n}번 ${GROWTH_DATA[n].t} ✅</strong></div>`).join("")}</div>`;
         }
         if (remaining.length > 0) {
-            missingHtml += `<div style="padding:15px;background:rgba(255,123,114,0.05);border-radius:12px;border:1px solid rgba(255,123,114,0.3);"><span style="color:var(--red);font-size:0.85rem;font-weight:bold;display:block;margin-bottom:8px;">🎯 집중 개발이 필요한 역량</span><span style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:10px;">의식적인 행동 실천으로 채워나가야 할 성장 영역입니다.</span>${remaining.map(n => `<div style="margin-bottom:12px;"><strong style="color:var(--red);font-size:0.88rem;">● ${n}번 ${GROWTH_DATA[n].t}</strong><span style="font-size:0.83rem;color:#ccc;display:block;margin-top:3px;">${GROWTH_DATA[n].d}</span><span style="font-size:0.78rem;color:var(--gold);display:block;margin-top:4px;">📌 실천 제안: ${GROWTH_DATA[n].action}</span></div>`).join("")}</div>`;
+            missingHtml += `<div style="padding:8px 10px;background:rgba(255,123,114,0.04);border-radius:8px;border:1px solid rgba(255,123,114,0.25);"><span style="color:var(--red);font-size:0.8rem;font-weight:bold;display:block;margin-bottom:4px;">🎯 집중 개발 역량</span><span style="font-size:0.74rem;color:var(--muted);display:block;margin-bottom:6px;">의식적인 행동 실천으로 채워나갈 성장 영역입니다.</span>${remaining.map(n => `<div style="margin-bottom:7px;"><strong style="color:var(--red);font-size:0.82rem;">● ${n}번 ${GROWTH_DATA[n].t}</strong><span style="font-size:0.79rem;color:#bbb;display:block;margin-top:2px;">${GROWTH_DATA[n].d}</span><span style="font-size:0.74rem;color:var(--gold);display:block;margin-top:2px;">📌 실천: ${GROWTH_DATA[n].action}</span></div>`).join("")}</div>`;
         }
     }
     setHtml("missingNumberArea", missingHtml);
@@ -468,13 +457,13 @@ function startAnalysis() {
     LOSHU_STRENGTH_RULES.forEach(rule => {
         if (rule.requires.every(has)) strengthText += rule.text;
     });
-    finalHtml += `<div class="loshu-report-card" style="border-left-color:var(--teal);margin-bottom:25px;"><h5 style="color:var(--teal);">🎯 강점 분석</h5><div class="desc-content">${strengthText || INTERPRETATION_TEXTS.loshuStrengthDefault}</div></div>`;
+    finalHtml += `<div class="loshu-report-card" style="border-left-color:var(--teal);"><h5 style="color:var(--teal);">🎯 강점 분석</h5><div class="desc-content">${strengthText || INTERPRETATION_TEXTS.loshuStrengthDefault}</div></div>`;
 
     let weaknessText = "";
     LOSHU_WEAKNESS_RULES.forEach(rule => {
         if (!has(rule.missing)) weaknessText += rule.text;
     });
-    finalHtml += `<div class="loshu-report-card" style="border-left-color:#ff7b72;margin-bottom:25px;"><h5 style="color:#ff7b72;">⚠️ 보완 영역</h5><div class="desc-content">${weaknessText || INTERPRETATION_TEXTS.loshuWeaknessDefault}</div></div>`;
+    finalHtml += `<div class="loshu-report-card" style="border-left-color:#ff7b72;"><h5 style="color:#ff7b72;">⚠️ 보완 영역</h5><div class="desc-content">${weaknessText || INTERPRETATION_TEXTS.loshuWeaknessDefault}</div></div>`;
 
     let intensityTxt = "";
     if (LOSHU_INTENSITY_RULES) {
@@ -488,15 +477,15 @@ function startAnalysis() {
     const solutionTxt = (!has(4) || !has(8)) ? INTERPRETATION_TEXTS.loshuSolutionWhenWeak : INTERPRETATION_TEXTS.loshuSolutionWhenStable;
     // 강력한 재능 먼저 강조
     if (intensityTxt) {
-        finalHtml += `<div class="loshu-report-card" style="border-left-color:var(--gold);margin-bottom:25px;"><h5 style="color:var(--gold);">🌟 강력한 타고난 재능</h5><div class="desc-content">${intensityTxt}</div></div>`;
+        finalHtml += `<div class="loshu-report-card" style="border-left-color:var(--gold);"><h5 style="color:var(--gold);">🌟 강력한 타고난 재능</h5><div class="desc-content">${intensityTxt}</div></div>`;
     }
 
     finalHtml += `
-    <div class="loshu-report-card advice-box" style="background: rgba(251, 197, 49, 0.05); border-left: 4px solid #fbc531; padding: 25px; border-radius: 15px;">
-        <h5 style="color: #fbc531; font-size: 1.1rem; margin-bottom: 15px;">💡 핵심 성장 전략</h5>
-        <div class="desc-content" style="line-height: 1.8;">
-            <p style="margin-bottom: 15px;">${INTERPRETATION_TEXTS.loshuCoreStructurePrefix} ${has(5) ? INTERPRETATION_TEXTS.loshuCoreStructureWith5 : INTERPRETATION_TEXTS.loshuCoreStructureWithout5}</p>
-            ${(has(9) && has(5) && has(1)) ? `<p style="margin-bottom: 15px;">${INTERPRETATION_TEXTS.loshuSuccessArrow}</p>` : ""}
+    <div class="loshu-report-card" style="border-left-color:#fbc531;background:rgba(251,197,49,0.04);">
+        <h5 style="color:#fbc531;">💡 핵심 성장 전략</h5>
+        <div class="desc-content">
+            <p style="margin-bottom:8px;">${INTERPRETATION_TEXTS.loshuCoreStructurePrefix} ${has(5) ? INTERPRETATION_TEXTS.loshuCoreStructureWith5 : INTERPRETATION_TEXTS.loshuCoreStructureWithout5}</p>
+            ${(has(9) && has(5) && has(1)) ? `<p style="margin-bottom:8px;">${INTERPRETATION_TEXTS.loshuSuccessArrow}</p>` : ""}
             <p><b>📍 최종 솔루션:</b> ${solutionTxt}</p>
         </div>
     </div>`;
@@ -509,7 +498,7 @@ function startAnalysis() {
             const arrowEl = document.getElementById("loshuAnalysis");
             const arrowHtml = arrowKeys.map(k => {
                 const info = (LOSHU_ARROWS && LOSHU_ARROWS[k]) || null;
-                return info ? `<div class="loshu-report-card" style="border-left-color:var(--gold);"><h5 style="color:var(--gold);">➤ 피타고라스 화살표: ${k}</h5><div class="desc-content">${info}</div></div>` : "";
+                return info ? `<div class="loshu-report-card" style="border-left-color:var(--gold);background:rgba(217,177,111,0.04);"><h5 style="color:var(--gold);">⚡ 피타고라스 화살표 ${k}</h5><div class="desc-content">${info}</div></div>` : "";
             }).join("");
             if (arrowEl) arrowEl.innerHTML = arrowEl.innerHTML + arrowHtml;
         }
@@ -518,7 +507,7 @@ function startAnalysis() {
     }
 
     const cs = YEAR_STRATEGY[py] || YEAR_STRATEGY[1];
-    setHtml("yearHighlightArea", `<div class="card" style="border:2px solid var(--accent);background:linear-gradient(145deg,rgba(163,102,255,0.15),rgba(20,184,166,0.1));padding:25px;margin-top:40px;margin-bottom:30px;border-radius:20px;position:relative;overflow:hidden;"><div style="position:absolute;top:-10px;right:-10px;font-size:5rem;color:rgba(163,102,255,0.1);font-weight:bold;">${py}</div><h3 style="color:var(--teal);margin-bottom:15px;font-size:1.2rem;">🌟 ${curY}년 메인 테마</h3><div style="font-size:1.4rem;font-weight:bold;color:var(--text);margin-bottom:12px;">${py}번. ${TITLE_MAP[py]}</div><p style="font-size:0.95rem;color:#ccc;line-height:1.6;position:relative;z-index:1;"><b style="color:var(--gold);">올해의 목표:</b> ${cs.goal}<br><b style="color:var(--gold);">행동 전략:</b> ${cs.action}</p></div>`);
+    setHtml("yearHighlightArea", `<div class="card" style="border:1px solid var(--accent);background:linear-gradient(145deg,rgba(163,102,255,0.12),rgba(20,184,166,0.08));padding:14px 16px;margin-top:20px;margin-bottom:16px;border-radius:12px;position:relative;overflow:hidden;"><div style="position:absolute;top:-6px;right:8px;font-size:3.5rem;color:rgba(163,102,255,0.08);font-weight:bold;line-height:1;">${py}</div><div style="font-size:0.72rem;color:var(--teal);font-weight:700;margin-bottom:4px;">🌟 ${curY}년 메인 테마</div><div style="font-size:1.1rem;font-weight:bold;color:var(--text);margin-bottom:8px;">${py}번. ${TITLE_MAP[py]}</div><p style="font-size:0.84rem;color:#ccc;line-height:1.55;position:relative;z-index:1;margin:0;"><b style="color:var(--gold);">목표:</b> ${cs.goal}<br><b style="color:var(--gold);">전략:</b> ${cs.action}</p></div>`);
 
     renderTimeline(mr_r, dr_r, py, curY, curM);
 
@@ -532,7 +521,7 @@ function startAnalysis() {
     }
     const upcoming = turningPoints.find(p => p.year >= curY) || turningPoints[0];
     if (upcoming) {
-        setHtml("turningPointArea", `<div class="card" style="border:1px solid var(--gold);background:rgba(251,197,49,0.05);padding:20px;border-radius:15px;"><h4 style="color:var(--gold);margin-bottom:10px;font-size:1rem;">🚀 가장 가까운 인생 전환점</h4><p style="font-size:0.9rem;line-height:1.6;color:var(--text);">다음 거대한 변화는 <strong style="color:var(--accent);font-size:1.1rem;">${upcoming.year}년 (${upcoming.age}세)</strong>에 찾아옵니다.<br>새로운 9년 주기가 시작되는 이 시기, 인생의 중요한 결단과 환경 변화가 일어납니다.</p></div>`);
+        setHtml("turningPointArea", `<div class="card" style="border:1px solid var(--gold);background:rgba(251,197,49,0.04);padding:10px 14px;border-radius:10px;"><div style="font-size:0.75rem;color:var(--gold);font-weight:700;margin-bottom:4px;">🚀 가장 가까운 인생 전환점</div><p style="font-size:0.84rem;line-height:1.55;color:var(--text);margin:0;">다음 변화는 <strong style="color:var(--accent);">${upcoming.year}년 (${upcoming.age}세)</strong>에 찾아옵니다. 새로운 9년 주기가 시작되는 이 시기, 인생의 중요한 결단과 환경 변화가 일어납니다.</p></div>`);
     }
 
     const monthlyGrid = document.getElementById("monthlyForecastGrid");
