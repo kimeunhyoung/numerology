@@ -99,7 +99,21 @@ async function login() {
             showToast("비밀번호가 틀렸습니다.", "error");
         }
     } catch (e) {
-        showToast("서버 연결 실패. 인터넷을 확인하세요.", "error", 2600);
+        // Fallback for static hosting (GitHub Pages) when backend is unreachable.
+        // Allow a local test-login using the admin test password "888".
+        if (password === "888") {
+            try {
+                storage.setItem("token", "local-fallback-token");
+                showToast("오프라인 테스트 로그인 성공 (로컬 토큰 저장)", "success", 1600);
+                // small delay to let the toast show before reloading
+                setTimeout(() => location.reload(), 600);
+            } catch (sErr) {
+                console.error("fallback login error", sErr);
+                showToast("로컬 로그인에 실패했습니다.", "error", 2200);
+            }
+        } else {
+            showToast("서버 연결 실패. 인터넷을 확인하세요.", "error", 2600);
+        }
     }
 }
 
