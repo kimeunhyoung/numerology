@@ -423,8 +423,11 @@ function startAnalysis() {
     ];
     const curMajor = userAge <= age1 ? majorCycles[0] : (userAge <= age1 + 27 ? majorCycles[1] : majorCycles[2]);
 
-    setHtml("storyReport", `<div class="story-report">
-        <div class="story-title">✦ 당신의 인생 스토리 — 지금 이 순간의 나침반</div>
+    setHtml("storyReport", `<div class="accordion story-accordion">
+        <div class="accordion-header">
+            <h4>✦ 당신의 인생 스토리 — 지금 이 순간의 나침반</h4>
+        </div>
+        <div class="accordion-content"><div class="story-report" style="border:none;padding:8px 0 0;background:none;">
 
         <div class="story-card">
             <div class="story-card-tag">🌟 본질 · 인생여정수 ${lp}번</div>
@@ -456,7 +459,7 @@ function startAnalysis() {
             </div>
         </div>
 
-    </div>`);
+    </div></div></div>`);
 
     // 즉시 통합 진단 리포트 출력 (질문/선택 버튼 없음)
     (function attachCycleDeepHandlers() {
