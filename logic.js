@@ -31,9 +31,8 @@ const {
     getZodiacInfo = function(){ return {n:'미지', i:'✨', t:''}; }
 } = _ND;
 
-// PWA(홈 화면 추가) 앱인지 일반 웹인지 판별하여 저장소 결정
-const isPWA = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-const storage = isPWA ? window.localStorage : window.sessionStorage;
+// 항상 로그인 화면부터 시작되도록 인증 토큰은 세션에만 유지
+const authStorage = window.sessionStorage;
 
 // 동적 로드 시 DOMContentLoaded가 이미 지났을 수 있으므로 즉시 실행
 if (document.readyState === "loading") {
@@ -57,7 +56,11 @@ function showToast(message, type = "warn", duration = 2200) {
 async function checkAuth() {
     let token = null;
     try {
-        token = window.localStorage.getItem("token") || window.sessionStorage.getItem("token");
+        token = authStorage.getItem("token");
+        // 이전 버전에서 localStorage에 남은 토큰은 로그인 우선 정책을 위해 정리
+        if (window.localStorage.getItem("token")) {
+            window.localStorage.removeItem("token");
+        }
     } catch (e) {
         // fallback if storage access is blocked
         console.warn("storage access failed", e);
@@ -98,8 +101,7 @@ async function checkAuth() {
                 return;
             }
             if (data.token) {
-                window.localStorage.setItem("token", data.token);
-                window.sessionStorage.setItem("token", data.token);
+                authStorage.setItem("token", data.token);
             }
         } catch (e) {
             console.log("서버 응답 없음, 현재 세션 유지");
@@ -114,9 +116,8 @@ async function login() {
 
     // 888 입력시 서버 시도 전에 즉시 오프라인 로그인
     if (password === "888") {
-        // 강제로 localStorage에 저장 후 리로드
-        window.localStorage.setItem("token", "local-fallback-token");
-        window.sessionStorage.setItem("token", "local-fallback-token");
+        authStorage.setItem("token", "local-fallback-token");
+        window.localStorage.removeItem("token");
         showToast("로그인 성공!", "success", 1400);
         setTimeout(() => location.reload(), 500);
         return;
@@ -131,7 +132,8 @@ async function login() {
 
         if (res.ok) {
             const data = await res.json();
-            storage.setItem("token", data.token);
+            authStorage.setItem("token", data.token);
+            window.localStorage.removeItem("token");
             showToast("인증 성공!", "success");
             location.reload();
         } else {
@@ -145,7 +147,7 @@ async function login() {
 
 // 버튼 클릭 이벤트 리스너 (보안 체크)
 document.getElementById("btnRun").addEventListener("click", function () {
-    const token = storage.getItem("token");
+    const token = authStorage.getItem("token");
     if (token) {
         startAnalysis();
     } else {

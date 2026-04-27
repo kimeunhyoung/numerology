@@ -1,4 +1,4 @@
-const CACHE_NAME = "lifecode-cache-v2";
+const CACHE_NAME = "lifecode-cache-v3";
 const PRECACHE_URLS = [
     "./",
     "./index.html",
