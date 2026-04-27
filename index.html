@@ -606,9 +606,13 @@
 <!-- Use fixed local data file to guarantee latest content (bypass Pages cache) -->
 <script>
   (function(){
-    const DATA_SRC = './data.v3.js?v=1';
-    const FALLBACK_SRC = './data.v3.js?v=1';
-    const LOGIC_SRC = './logic.js?v=eac29a3';
+    // Prefer full data files first; keep minimal emergency file last.
+    const DATA_SOURCES = [
+      './data.js?v=20260427a',
+      './data.fixed.js?v=20260427a',
+      './data.v3.js?v=1'
+    ];
+    const LOGIC_SRC = './logic.js?v=20260427a';
 
     function loadScript(src, onload, onerror) {
       const s = document.createElement('script');
@@ -619,40 +623,63 @@
       document.head.appendChild(s);
     }
 
-    function afterDataLoaded() {
-      if (!window.NUMEROLOGY_DATA) {
-        console.warn('NUMEROLOGY_DATA not present after data script load.');
-        return false;
-      }
-      // safe to load logic now
-      loadScript(LOGIC_SRC, ()=>console.log('logic.js loaded'), (e)=>console.error('logic.js load error', e));
-      return true;
+    function hasUsableData() {
+      const d = window.NUMEROLOGY_DATA;
+      return !!(
+        d &&
+        d.TITLE_MAP &&
+        d.GROWTH_DATA &&
+        Object.keys(d.GROWTH_DATA).length > 0
+      );
     }
 
-    // Try load primary data script
-    loadScript(DATA_SRC, function(){
-      // onload may still suffer parse error; check presence
-      if (!afterDataLoaded()) {
-        console.warn('Primary data script loaded but NUMEROLOGY_DATA missing, loading fallback.');
-        loadScript(FALLBACK_SRC, function(){
-          if (!afterDataLoaded()) {
-            console.error('Fallback also failed to provide NUMEROLOGY_DATA.');
-          } else {
-            console.log('Fallback provided NUMEROLOGY_DATA.');
-          }
-        }, function(){ console.error('Failed to load fallback data script.'); });
+    function showDataLoadError() {
+      const loginView = document.getElementById('loginView');
+      if (!loginView) return;
+      const id = 'dataLoadErrorMsg';
+      if (document.getElementById(id)) return;
+      const p = document.createElement('p');
+      p.id = id;
+      p.style.cssText = 'margin-top:12px;color:#ffb3b3;font-size:0.82rem;line-height:1.45;';
+      p.textContent = '데이터 로딩 오류가 발생했습니다. 잠시 후 새로고침(F5) 해주세요.';
+      loginView.appendChild(p);
+    }
+
+    function loadLogic() {
+      loadScript(
+        LOGIC_SRC,
+        function(){ console.log('logic.js loaded'); },
+        function(e){ console.error('logic.js load error', e); }
+      );
+    }
+
+    function tryLoadData(index) {
+      if (index >= DATA_SOURCES.length) {
+        console.error('All data sources failed to provide usable NUMEROLOGY_DATA.');
+        showDataLoadError();
+        return;
       }
-    }, function(){
-      // failed to load primary file -> load fallback
-      console.warn('Failed to load primary data script, loading fallback.');
-      loadScript(FALLBACK_SRC, function(){
-        if (!afterDataLoaded()) {
-          console.error('Fallback also failed to provide NUMEROLOGY_DATA.');
-        } else {
-          console.log('Fallback provided NUMEROLOGY_DATA.');
+
+      const src = DATA_SOURCES[index];
+      loadScript(
+        src,
+        function(){
+          if (hasUsableData()) {
+            console.log('Loaded numerology data from:', src);
+            loadLogic();
+          } else {
+            console.warn('Data source loaded but unusable, trying next:', src);
+            tryLoadData(index + 1);
+          }
+        },
+        function(){
+          console.warn('Failed to load data source, trying next:', src);
+          tryLoadData(index + 1);
         }
-      }, function(){ console.error('Failed to load fallback data script.'); });
-    });
+      );
+    }
+
+    tryLoadData(0);
   })();
 </script>
 </body>
