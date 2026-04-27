@@ -35,42 +35,6 @@ const {
 const isPWA = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
 const storage = isPWA ? window.localStorage : window.sessionStorage;
 
-// Robust token setter that tries multiple storage fallbacks (useful when browser blocks storage)
-function setTokenFallback(token) {
-    let stored = false;
-    try {
-        storage.setItem("token", token);
-        stored = true;
-    } catch (e) {
-        console.warn("primary storage set failed", e);
-    }
-    if (!stored) {
-        try {
-            window.localStorage.setItem("token", token);
-            stored = true;
-        } catch (e) {
-            console.warn("localStorage set failed", e);
-        }
-    }
-    if (!stored) {
-        try {
-            window.sessionStorage.setItem("token", token);
-            stored = true;
-        } catch (e) {
-            console.warn("sessionStorage set failed", e);
-        }
-    }
-    if (!stored) {
-        try {
-            document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}`;
-            stored = true;
-        } catch (e) {
-            console.warn("cookie set failed", e);
-        }
-    }
-    return stored;
-}
-
 // 동적 로드 시 DOMContentLoaded가 이미 지났을 수 있으므로 즉시 실행
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", checkAuth);
@@ -100,27 +64,23 @@ async function checkAuth() {
     }
     const loginView = document.getElementById("loginView");
     const container = document.querySelector(".container");
-
-    if (!token) {
-        // If running locally (dev) or opened via file protocol, try to auto-set a local dev token
-        if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:") {
-            const ok = setTokenFallback("local-dev-token");
-            if (ok) {
-                token = "local-dev-token";
-            }
-        }
-        if (!token) {
+    const setAuthView = (isLoggedIn) => {
+        if (isLoggedIn) {
+            loginView.style.display = "none";
+            container.style.display = "block";
+        } else {
             loginView.style.display = "block";
             container.style.display = "none";
-            return;
         }
+    };
+
+    if (!token) {
+        setAuthView(false);
+        return;
     }
 
-    loginView.style.display = "none";
-    container.style.display = "block";
-
     // local-fallback-token은 서버 검증 없이 바로 통과
-    const isLocalToken = token === "local-fallback-token" || token === "local-dev-token";
+    const isLocalToken = token === "local-fallback-token";
 
     if (!isLocalToken && navigator.onLine) {
         try {
@@ -134,9 +94,10 @@ async function checkAuth() {
                 showToast("보안 정책이 변경되어 다시 로그인해주세요.", "error", 2600);
                 window.localStorage.removeItem("token");
                 window.sessionStorage.removeItem("token");
-                loginView.style.display = "block";
-                container.style.display = "none";
-            } else if (data.token) {
+                setAuthView(false);
+                return;
+            }
+            if (data.token) {
                 window.localStorage.setItem("token", data.token);
                 window.sessionStorage.setItem("token", data.token);
             }
@@ -144,6 +105,8 @@ async function checkAuth() {
             console.log("서버 응답 없음, 현재 세션 유지");
         }
     }
+
+    setAuthView(true);
 }
 
 async function login() {
