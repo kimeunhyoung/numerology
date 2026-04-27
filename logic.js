@@ -437,8 +437,6 @@ function startAnalysis() {
     const c3 = reduceToSingle(Math.abs(c1 - c2), true);
     const c4 = reduceToSingle(Math.abs(mr_r - yr_r), true);
     const cyData = [{ s: "1단계", a: `0~${age1}`, p: p1, c: c1 }, { s: "2단계", a: `${age1 + 1}~${age1 + 9}`, p: p2, c: c2 }, { s: "3단계", a: `${age1 + 10}~${age1 + 18}`, p: p3, c: c3 }, { s: "4단계", a: `${age1 + 19}~`, p: p4, c: c4 }];
-    setHtml("tableBody", cyData.map(c => `<tr><td>${c.s}</td><td>${c.a}</td><td class="p-num">${c.p}</td><td class="c-num">${c.c}</td></tr>`).join(""));
-    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><div class="cy-hd-left"><span class="cy-hd-stage">${c.s} (${c.a}세)</span><span class="cy-hd-age">${TITLE_MAP[c.p] || ""}</span></div><div class="cy-hd-badges"><span class="cy-badge-p">P${c.p}</span><span class="cy-badge-c">C${c.c}</span></div></div><div class="cycle-content-acc"><div class="cy-info-row"><span class="cycle-label-p">📍 환경 ${c.p}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${P_DETAIL[c.p] || ""}</div></div><div class="cy-info-row"><span class="cycle-label-c">🎯 과제 ${c.c}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${C_DETAIL[c.c] || ""}</div></div><button class="cycle-deep-btn" data-cycle-index="${i}">심층 진단 리포트 →</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
 
     // ── 현재 단계 계산 ──
     const userAge = curY - y;
@@ -446,6 +444,16 @@ function startAnalysis() {
     if (userAge <= age1) curStageIdx = 0;
     else if (userAge <= age1 + 9) curStageIdx = 1;
     else if (userAge <= age1 + 18) curStageIdx = 2;
+
+    setHtml("tableBody", cyData.map((c, i) => `
+        <tr class="${i === curStageIdx ? "stage-current-row" : ""}">
+            <td>${c.s}${i === curStageIdx ? ' <span class="stage-now-badge">현재</span>' : ""}</td>
+            <td>${c.a}</td>
+            <td class="p-num">${c.p}</td>
+            <td class="c-num">${c.c}</td>
+        </tr>
+    `).join(""));
+    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><div class="cy-hd-left"><span class="cy-hd-stage">${c.s} (${c.a}세)</span><span class="cy-hd-age">${TITLE_MAP[c.p] || ""}</span></div><div class="cy-hd-badges"><span class="cy-badge-p">P${c.p}</span><span class="cy-badge-c">C${c.c}</span></div></div><div class="cycle-content-acc"><div class="cy-info-row"><span class="cycle-label-p">📍 환경 ${c.p}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${P_DETAIL[c.p] || ""}</div></div><div class="cy-info-row"><span class="cycle-label-c">🎯 과제 ${c.c}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${C_DETAIL[c.c] || ""}</div></div><button class="cycle-deep-btn" data-cycle-index="${i}">심층 진단 리포트 →</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
     const stageSeasons = ["봄 · 씨앗기", "여름 · 성장기", "가을 · 결실기", "겨울 · 완성기"];
 
     // ── 프로그레스 바 ──
