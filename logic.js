@@ -94,14 +94,14 @@ async function checkAuth() {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
-            const data = await res.json();
             if (res.status === 401) {
-                showToast("보안 정책이 변경되어 다시 로그인해주세요.", "error", 2600);
+                showToast("비밀번호가 변경되어 다시 로그인해주세요.", "error", 2800);
                 authStorage.removeItem(TOKEN_KEY);
                 window.sessionStorage.removeItem(TOKEN_KEY);
                 setAuthView(false);
                 return;
             }
+            const data = await res.json().catch(() => ({}));
             if (data.token) {
                 authStorage.setItem(TOKEN_KEY, data.token);
             }

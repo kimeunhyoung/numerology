@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const path = require("path");
+const crypto = require("crypto");
 require("dotenv").config();
 const app = express();
 app.use(express.json());
@@ -10,6 +11,14 @@ app.use(express.static(path.join(__dirname)));
 
 const SECRET = process.env.JWT_SECRET || "dev-change-me-secret";
 let CURRENT_PASSWORD = process.env.APP_PASSWORD || "888";
+
+/** APP_PASSWORD가 바뀌면 값이 달라져, 온라인 check-auth 시 기존 JWT는 401 처리됨 */
+function passwordFingerprint() {
+    return crypto
+        .createHash("sha256")
+        .update(`pw:${String(CURRENT_PASSWORD)}|secret:${String(SECRET)}`, "utf8")
+        .digest("hex");
+}
 const APP_BASE_URL = process.env.APP_BASE_URL || "https://numerology-app-w6rq.onrender.com";
 let oneTimeKeys = new Map();
 
@@ -160,23 +169,35 @@ app.get("/", (req, res) => {
 app.post("/login", (req, res) => {
     const { password } = req.body;
     if (password === CURRENT_PASSWORD) {
-        const token = jwt.sign({ auth: true }, SECRET, { expiresIn: "30d" });
+        const token = jwt.sign(
+            { auth: true, pw: passwordFingerprint() },
+            SECRET,
+            { expiresIn: "30d" }
+        );
         return res.json({ token });
     }
-    res.status(401).send("Unauthorized");
+    res.status(401).json({ error: "Unauthorized" });
 });
 
 // 5. 토큰 유효성 검사 + 자동 갱신
 app.get("/check-auth", (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).send("Unauthorized");
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
     try {
-        jwt.verify(token, SECRET);
-        // 유효하면 새 토큰 발급 (30일 자동 연장)
-        const newToken = jwt.sign({ auth: true }, SECRET, { expiresIn: "30d" });
+        const decoded = jwt.verify(token, SECRET);
+        const currentFp = passwordFingerprint();
+        if (!decoded.pw || decoded.pw !== currentFp) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        // 유효하면 새 토큰 발급 (30일 자동 연장, 현재 비밀번호 지문 반영)
+        const newToken = jwt.sign(
+            { auth: true, pw: currentFp },
+            SECRET,
+            { expiresIn: "30d" }
+        );
         res.json({ valid: true, token: newToken });
     } catch (e) {
-        res.status(401).send("Unauthorized");
+        res.status(401).json({ error: "Unauthorized" });
     }
 });
 
