@@ -1,4 +1,6 @@
-const CACHE_NAME = "lifecode-cache-v6";
+const CACHE_NAME = "lifecode-cache-v7";
+
+/** 오프라인 첫 실행용 — 이후에는 fetch 핸들러가 네트워크 우선으로 갱신 */
 const PRECACHE_URLS = [
     "./",
     "./index.html",
@@ -8,6 +10,15 @@ const PRECACHE_URLS = [
     "./data.v3.js",
     "./manifest.json"
 ];
+
+function isVolatileAppAsset(url) {
+    const p = url.pathname;
+    return (
+        /\.js$/i.test(p) ||
+        /\/manifest\.json$/i.test(p) ||
+        p.endsWith("/index.html")
+    );
+}
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -56,7 +67,22 @@ self.addEventListener("fetch", (event) => {
         return;
     }
 
-    // Static assets: cache first (ignore query), then network fallback.
+    // 스크립트·매니페스트: 네트워크 우선(배포 반영), 실패 시 캐시 — cache-first+ignoreSearch는 ?v= 무시되어 영구 구버전 됨
+    if (isVolatileAppAsset(url)) {
+        event.respondWith(
+            fetch(request)
+                .then((response) => {
+                    if (response.ok) {
+                        const copy = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+                    }
+                    return response;
+                })
+                .catch(() => caches.match(request, { ignoreSearch: true }))
+        );
+        return;
+    }
+
     event.respondWith(
         caches.match(request, { ignoreSearch: true }).then((cached) => {
             if (cached) return cached;

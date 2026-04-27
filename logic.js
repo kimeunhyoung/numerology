@@ -820,10 +820,27 @@ async function downloadPDF() {
 }
 
 if ("serviceWorker" in navigator) {
+    let swReloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (swReloading) return;
+        swReloading = true;
+        window.location.reload();
+    });
+
     window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").then(reg => {
+        navigator.serviceWorker.register("./service-worker.js").then((reg) => {
             console.log("서비스 워커 등록 성공!", reg);
-        }).catch(err => {
+            reg.update().catch(() => {});
+            reg.addEventListener("updatefound", () => {
+                const nw = reg.installing;
+                if (!nw) return;
+                nw.addEventListener("statechange", () => {
+                    if (nw.state === "installed" && navigator.serviceWorker.controller) {
+                        showToast("새 버전 적용 중…", "success", 1400);
+                    }
+                });
+            });
+        }).catch((err) => {
             console.log("서비스 워커 등록 실패", err);
         });
     });
