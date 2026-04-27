@@ -570,15 +570,20 @@ function startAnalysis() {
 
     const birthOnlyDigits = new Set((String(y) + String(m) + String(d)).split("").map(Number).filter(n => n !== 0));
     const karmicLessons = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => !birthOnlyDigits.has(n));
-    const nameDigits = sc.allDigits;
+    // 이름 미입력 시 placeholder "무명"으로 계산한 글자 숫자는 보완 분석에 쓰지 않음
+    const nameDigits = hasName ? sc.allDigits : new Set();
     const compensated = karmicLessons.filter(n => nameDigits.has(n));
     const remaining = karmicLessons.filter(n => !nameDigits.has(n));
+
+    const growthMapIntro = hasName
+        ? "📌 생년월일에 없는 숫자 = 선천적 미활성 영역. 이름이 보완하는지 함께 분석합니다."
+        : "📌 생년월일에 없는 숫자 = 선천적 미활성 영역. 이름을 입력하면 후천적 보완 여부가 함께 표시됩니다.";
 
     let missingHtml = "";
     if (karmicLessons.length === 0) {
         missingHtml = `<p style="font-size:0.82rem;color:var(--muted);">${INTERPRETATION_TEXTS.growthMapAllActive}</p>`;
     } else {
-        missingHtml += `<div style="margin-bottom:10px;"><span style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:6px;">📌 생년월일에 없는 숫자 = 선천적 미활성 영역. 이름이 보완하는지 함께 분석합니다.</span>${karmicLessons.map(n => `<div style="margin-bottom:6px;padding:7px 10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid #2a2a3a;"><strong style="color:var(--teal);font-size:0.83rem;">● ${n}번 ${GROWTH_DATA[n].t}</strong><span style="font-size:0.8rem;color:#bbb;display:block;margin-top:2px;">${GROWTH_DATA[n].d}</span></div>`).join("")}</div>`;
+        missingHtml += `<div style="margin-bottom:10px;"><span style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:6px;">${growthMapIntro}</span>${karmicLessons.map(n => `<div style="margin-bottom:6px;padding:7px 10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid #2a2a3a;"><strong style="color:var(--teal);font-size:0.83rem;">● ${n}번 ${GROWTH_DATA[n].t}</strong><span style="font-size:0.8rem;color:#bbb;display:block;margin-top:2px;">${GROWTH_DATA[n].d}</span></div>`).join("")}</div>`;
         if (compensated.length > 0) {
             missingHtml += `<div style="margin-bottom:8px;padding:8px 10px;background:rgba(46,213,115,0.04);border-radius:8px;border:1px solid rgba(46,213,115,0.25);"><span style="color:var(--teal);font-size:0.8rem;font-weight:bold;display:block;margin-bottom:4px;">✅ 후천적 보완 역량</span><span style="font-size:0.74rem;color:var(--muted);display:block;margin-bottom:6px;">이름(언어 환경)이 자연스럽게 채워주고 있습니다.</span>${compensated.map(n => `<div style="margin-bottom:3px;"><strong style="color:var(--teal);font-size:0.82rem;">● ${n}번 ${GROWTH_DATA[n].t} ✅</strong></div>`).join("")}</div>`;
         }
