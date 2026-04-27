@@ -447,13 +447,13 @@ function startAnalysis() {
 
     setHtml("tableBody", cyData.map((c, i) => `
         <tr class="${i === curStageIdx ? "stage-current-row" : ""}">
-            <td>${c.s}${i === curStageIdx ? ' <span class="stage-now-badge">현재</span>' : ""}</td>
+            <td>${c.s}</td>
             <td>${c.a}</td>
             <td class="p-num">${c.p}</td>
             <td class="c-num">${c.c}</td>
         </tr>
     `).join(""));
-    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><div class="cy-hd-left"><span class="cy-hd-stage">${c.s} (${c.a}세)${i === curStageIdx ? ' <span class="major-now-badge">현재</span>' : ""}</span><span class="cy-hd-age">${TITLE_MAP[c.p] || ""}</span></div><div class="cy-hd-badges"><span class="cy-badge-p">P${c.p}</span><span class="cy-badge-c">C${c.c}</span></div></div><div class="cycle-content-acc"><div class="cy-info-row"><span class="cycle-label-p">📍 환경 ${c.p}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${P_DETAIL[c.p] || ""}</div></div><div class="cy-info-row"><span class="cycle-label-c">🎯 과제 ${c.c}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${C_DETAIL[c.c] || ""}</div></div><button class="cycle-deep-btn" data-cycle-index="${i}">심층 진단 리포트 →</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
+    setHtml("cycleArea", cyData.map((c, i) => `<div class="cycle-block"><div class="cycle-header-acc"><div class="cy-hd-left"><span class="cy-hd-stage">${c.s} (${c.a}세)</span><span class="cy-hd-age">${TITLE_MAP[c.p] || ""}${i === curStageIdx ? ' <span class="major-now-badge">현재</span>' : ""}</span></div><div class="cy-hd-badges"><span class="cy-badge-p">P${c.p}</span><span class="cy-badge-c">C${c.c}</span></div></div><div class="cycle-content-acc"><div class="cy-info-row"><span class="cycle-label-p">📍 환경 ${c.p}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${P_DETAIL[c.p] || ""}</div></div><div class="cy-info-row"><span class="cycle-label-c">🎯 과제 ${c.c}번</span></div><div class="cycle-text"><div class=\"pdetail-inner\">${C_DETAIL[c.c] || ""}</div></div><button class="cycle-deep-btn" data-cycle-index="${i}">심층 진단 리포트 →</button><div id="cycleDeepPrompt-${i}" class="deep-prompt-container"></div><div id="cycleDeepReport-${i}" class="cycle-deep-report" style="display:none;"></div></div></div>`).join(""));
     const stageSeasons = ["봄 · 씨앗기", "여름 · 성장기", "가을 · 결실기", "겨울 · 완성기"];
 
     // ── 프로그레스 바 ──
