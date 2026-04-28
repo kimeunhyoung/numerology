@@ -719,29 +719,94 @@ function startAnalysis() {
     }
 
     const monthlyGrid = document.getElementById("monthlyForecastGrid");
+    const monthlyDetailEl = document.getElementById("monthlyForecastDetail");
+
+    const renderMonthlyDetailPanel = (mo, pm2) => {
+        const kw = MONTHLY_KEYWORDS[pm2] || (MONTHLY_KEYWORDS[(pm2 % 9 === 0) ? 9 : pm2 % 9] || "흐름");
+        const title = TITLE_MAP[pm2] || "";
+        const flowPhrase = FLOW_PHRASE[pm2] || "";
+        const tlDesc = TL_DESC[pm2] || "";
+        const deep = DEEP_MAP[pm2] || "";
+        const strat = YEAR_STRATEGY[pm2] || YEAR_STRATEGY[reduceToSingle(pm2, true)] || {};
+        const monthQ = QUESTIONS["이번 달의 수"] || "";
+        const rawSum = py + mo;
+        const sumLine = `${py} + ${mo} = ${rawSum} → 환산 <strong style="color:var(--accent);">${pm2}</strong>번`;
+
+        if (!monthlyDetailEl) return;
+        monthlyDetailEl.innerHTML = `<div class="monthly-detail-card">
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:10px;line-height:1.55;">
+                <strong style="color:var(--teal);">계산 방식</strong> · ${curY}년 당신의 <strong>개인 연도 수 ${py}번</strong>에, 해당 달의 숫자(1~12)를 더한 뒤 수비학 규칙으로 한 자리 또는 마스터 숫자(11·22·33)로 줄이면 <strong>개인 월 넘버</strong>가 됩니다.<br>
+                <span style="display:block;margin-top:6px;color:#9aa;">${sumLine}</span>
+            </div>
+            <div style="font-size:0.98rem;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-0.02em;">${mo}월 — 개인 월 ${pm2}번 · ${kw}</div>
+            ${title ? `<div style="font-size:0.84rem;color:var(--gold);margin-bottom:10px;line-height:1.45;">${title}</div>` : ""}
+            ${flowPhrase ? `<p style="font-size:0.8rem;color:#c5bde0;margin:0 0 8px 0;line-height:1.6;">이 달이 주는 공통 톤은 <strong style="color:var(--text);">${flowPhrase}</strong> 흐름에 가깝습니다. 같은 숫자라도 개인 연도·일운과 만나면 세부 느낌은 달라질 수 있으니, 아래 해석은 ‘그 달의 기본 테마’로 받아들이면 됩니다.</p>` : ""}
+            ${tlDesc ? `<p style="font-size:0.8rem;color:var(--teal);margin:0 0 12px 0;line-height:1.6;">✔ <strong>한 줄 실천:</strong> ${tlDesc}</p>` : ""}
+            ${monthQ ? `<div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">Q. ${monthQ}</div>` : ""}
+            ${deep ? `<div class="desc-content" style="font-size:0.84rem;line-height:1.68;color:#ccc;margin-bottom:12px;">${deep}</div>` : ""}
+            ${strat.goal ? `<div style="padding:10px 12px;background:rgba(163,102,255,0.08);border-radius:8px;border:1px solid rgba(163,102,255,0.25);">
+                <div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-bottom:5px;">📌 이 진동에 맞춰 이 달에 시도해 볼 것</div>
+                <div style="font-size:0.8rem;color:#ddd;line-height:1.55;"><strong style="color:var(--gold);">방향:</strong> ${strat.goal}<br><strong style="color:var(--gold);">실천:</strong> ${strat.action}</div>
+            </div>` : ""}
+        </div>`;
+    };
+
+    const setMonthlySelection = (mo) => {
+        const pm2 = reduceToSingle(py + mo, true);
+        if (monthlyGrid) {
+            monthlyGrid.querySelectorAll(".monthly-cell").forEach((el) => {
+                const m = Number(el.dataset.month);
+                el.classList.toggle("monthly-cell-selected", m === mo);
+            });
+        }
+        renderMonthlyDetailPanel(mo, pm2);
+    };
+
     if (monthlyGrid) {
         const monthlyCards = [];
         for (let mo = 1; mo <= 12; mo++) {
             const pm2 = reduceToSingle(py + mo, true);
-            const isCurrentMonth = (mo === curM);
+            const isCurrentMonth = mo === curM;
             const kw = MONTHLY_KEYWORDS[pm2] || (MONTHLY_KEYWORDS[(pm2 % 9 === 0) ? 9 : pm2 % 9] || "흐름");
-            monthlyCards.push(`<div class="card" style="padding:10px 2px;${isCurrentMonth ? "border:1px solid var(--teal);background:rgba(20,184,166,0.1);" : "border:1px solid #222;"}"><span style="font-size:0.65rem;color:${isCurrentMonth ? "var(--teal)" : "var(--muted)"}">${mo}월</span><strong style="font-size:1.1rem;display:block;margin:2px 0;color:var(--accent);">${pm2}</strong><span style="font-size:0.6rem;color:#ccc;">${kw}</span></div>`);
+            const cls = `card monthly-cell${isCurrentMonth ? " monthly-cell-current" : ""}${mo === curM ? " monthly-cell-selected" : ""}`;
+            monthlyCards.push(
+                `<div class="${cls}" style="padding:10px 2px;border:1px solid #222;" role="button" tabindex="0" data-month="${mo}" aria-label="${mo}월 개인 월 ${pm2}번 ${kw}"><span style="font-size:0.65rem;color:${isCurrentMonth ? "var(--teal)" : "var(--muted)"}">${mo}월</span><strong style="font-size:1.1rem;display:block;margin:2px 0;color:var(--accent);">${pm2}</strong><span style="font-size:0.6rem;color:#ccc;">${kw}</span></div>`
+            );
         }
         monthlyGrid.innerHTML = monthlyCards.join("");
+
+        monthlyGrid.onclick = (e) => {
+            const cell = e.target.closest(".monthly-cell");
+            if (!cell) return;
+            setMonthlySelection(Number(cell.dataset.month));
+        };
+        monthlyGrid.onkeydown = (e) => {
+            const cell = e.target.closest(".monthly-cell");
+            if (!cell || (e.key !== "Enter" && e.key !== " ")) return;
+            e.preventDefault();
+            setMonthlySelection(Number(cell.dataset.month));
+        };
+
+        setMonthlySelection(curM);
+    } else if (monthlyDetailEl) {
+        monthlyDetailEl.innerHTML = "";
     }
 
     const monthlyNoteEl = document.getElementById("monthlyForecastNote");
     if (monthlyNoteEl) {
-        const pmTitle = TITLE_MAP[pm] || "";
-        const pmHint = TL_DESC[pm] || FLOW_PHRASE[pm] || "";
         const staticIntro =
             (INTERPRETATION_TEXTS && INTERPRETATION_TEXTS.monthlyForecastIntro) ||
-            `위 표는 <strong style="color:var(--text);">${curY}년</strong>의 개인 연도 수 <strong style="color:var(--accent);">${py}번</strong>에 각 달(1~12월) 숫자를 더해 환산한 <strong style="color:var(--teal);">개인 월 넘버</strong>입니다. 큰 숫자는 그 달의 진동 수, 아래 짧은 글자는 그 기운을 한눈에 짚은 키워드입니다.`;
+            "";
+        const defaultIntro = `<p style="font-size:0.8rem;line-height:1.68;color:#ccc;margin:0 0 12px 0;">
+            <strong style="color:var(--text);">개인 월 넘버</strong>는 <strong style="color:var(--accent);">${curY}년</strong>에 당신에게 해당하는 <strong>개인 연도 수 ${py}번</strong>을 기준으로, 각 달(1~12)의 숫자를 더해 구합니다.
+            수비학에서는 이 숫자를 <strong style="color:var(--teal);">그 달 전체를 관통하는 에너지의 색</strong>으로 봅니다. 카드 가운데 큰 숫자가 개인 월 넘버, 맨 아래 짧은 단어는 그 기운을 요약한 키워드입니다.
+        </p>
+        <p style="font-size:0.8rem;line-height:1.68;color:#bbb;margin:0 0 12px 0;">
+            달력상 <strong style="color:var(--teal);">이번 달</strong> 칸은 초록 테두리로 표시됩니다. <strong style="color:var(--gold);">눌러서 고른 달</strong>은 금색 테두리로 바뀌며, <strong>바로 아래</strong>에 그 달의 상세 해석·실천 팁이 펼쳐집니다. 다른 달을 눌러 올해 흐름을 월별로 비교해 보세요.
+        </p>`;
         monthlyNoteEl.innerHTML = `<div class="insight-box" style="margin-top:0;">
-            <p style="font-size:0.8rem;line-height:1.6;color:#ccc;margin:0 0 12px 0;">${staticIntro}</p>
-            <p style="font-size:0.8rem;line-height:1.6;color:#ccc;margin:0;">
-                <strong style="color:var(--gold);">📍 이번 달 (${curM}월)</strong> — 개인 월 <strong style="color:var(--accent);">${pm}번</strong>${pmTitle ? ` · ${pmTitle}` : ""}${pmHint ? `<br><span style="color:var(--muted);">${pmHint}</span>` : ""}
-            </p>
+            ${staticIntro || defaultIntro}
+            <p style="font-size:0.78rem;line-height:1.6;color:var(--muted);margin:0;"><strong style="color:var(--gold);">💡</strong> 월 칸을 탭하면 하단에 긴 설명이 나옵니다.</p>
         </div>`;
     }
 
