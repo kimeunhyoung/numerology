@@ -31,6 +31,58 @@ const {
     getZodiacInfo = function(){ return {n:'미지', i:'✨', t:''}; }
 } = _ND;
 
+/** 월별 상세 — 숫자마다 다른 짧은 설명(태그 + 본문). 계산식·공통 멘트 없이 읽기 쉬운 톤. */
+const MONTHLY_PLAIN_BLURBS = {
+    1: {
+        tag: "시작·주도",
+        body: "새로 시작하고 앞장서서 밀고 나가기 좋은 때예요. 혼자 다 하려는 마음이 커질 수 있으니, 막힐 때 짧게라도 주변에 손을 내미는 연습이 부담을 줄여 줍니다."
+    },
+    2: {
+        tag: "협력·공감",
+        body: "관계와 분위기에 민감해지기 쉬운 달이에요. 남의 기분을 과하게 떠안기보다, 내 상태를 잠깐이라도 점검하면 관계가 한결 가벼워집니다."
+    },
+    3: {
+        tag: "표현·소통",
+        body: "말하기, 보여주기, 만드는 일에 에너지가 모입니다. 인정받고 싶은 마음이 커질 수 있어요. 완벽하지 않아도 괜찮다는 전제로, 한 번 덜어내고 표현해 보세요."
+    },
+    4: {
+        tag: "안정·기반",
+        body: "루틴과 기초를 다지기 좋은 때예요. 완벽한 준비만 기다리다 시작이 늦어지지 않게, ‘오늘 꼭 할 한 가지’만 정해 두면 충분합니다."
+    },
+    5: {
+        tag: "변화·탐색",
+        body: "새 자극·이동·선택이 끌리기 쉬워요. 여러 가지를 동시에 잡다 흐지부지되지 않게, 이번 달에 끝까지 가 볼 한 가지를 정해 두면 좋아요."
+    },
+    6: {
+        tag: "조화·돌봄",
+        body: "가족·동료 등 가까운 사람과의 책임과 균형이 부각됩니다. 타인에게만 맞추지 말고, 나에게도 정당한 배려를 허용할 때 관계가 건강해집니다."
+    },
+    7: {
+        tag: "성찰·내면",
+        body: "혼자 정리하고 배우기 좋은 달이에요. 모든 걸 속으로만 삼키려 하기보다, 믿을 만한 사람에게 일부만 나눠도 마음이 한결 가벼워집니다."
+    },
+    8: {
+        tag: "성취·실행",
+        body: "결과와 책임, 현실적인 성과에 시선이 갑니다. 목표만 앞세우다 사람과의 약속을 놓치지 않도록, 중간중간 관계도 함께 챙겨 보세요."
+    },
+    9: {
+        tag: "마무리·정리",
+        body: "끝내기·비우기·정리하기가 주제로 뜨기 쉬워요. 미련을 조금씩 줄일수록 다음 자리가 비워집니다. 작은 것 하나라도 깔끔히 닫아 보세요."
+    },
+    11: {
+        tag: "직관·감각",
+        body: "날카로운 느낌이나 영감이 올라올 수 있어요. 예민해질 때는 자극을 줄이고 잠깐의 고요가 필요합니다. 떠오른 생각을 글이나 행동 한 번으로만 옮겨 보세요."
+    },
+    22: {
+        tag: "설계·큰 그림",
+        body: "개인을 넘어선 그림과 구조를 떠올리기 쉬운 달이에요. 비전은 크게 두되, 오늘 할 수 있는 작은 단계로 쪼개야 현실에 닿습니다."
+    },
+    33: {
+        tag: "나눔·치유",
+        body: "베풂과 돌봄의 마음이 커질 수 있어요. 남을 돕다 나를 비우지 않도록, 짧게라도 먼저 내 회복을 챙기는 순서를 지키면 오래 갑니다."
+    }
+};
+
 // 토큰은 기기에 유지(앱·탭을 닫아도 재로그인 불필요). 서버에서 무효화(401) 시에만 제거.
 const authStorage = window.localStorage;
 const TOKEN_KEY = "token";
@@ -723,41 +775,18 @@ function startAnalysis() {
 
     const renderMonthlyDetailPanel = (mo, pm2) => {
         const kw = MONTHLY_KEYWORDS[pm2] || (MONTHLY_KEYWORDS[(pm2 % 9 === 0) ? 9 : pm2 % 9] || "흐름");
-        const title = TITLE_MAP[pm2] || "";
-        const flowPhrase = FLOW_PHRASE[pm2] || "";
-        const tlDesc = TL_DESC[pm2] || "";
-        const strat = YEAR_STRATEGY[pm2] || YEAR_STRATEGY[reduceToSingle(pm2, true)] || {};
+        const blurb = MONTHLY_PLAIN_BLURBS[pm2] || MONTHLY_PLAIN_BLURBS[reduceToSingle(pm2, true)];
+        const tag = blurb ? blurb.tag : (TL_KEYWORD[pm2] || kw);
+        const body = blurb
+            ? blurb.body
+            : [TITLE_MAP[pm2], TL_DESC[pm2]].filter(Boolean).join(" ");
 
         if (!monthlyDetailEl) return;
 
-        const leadParts = [];
-        if (title) {
-            leadParts.push(`이달은 <strong style="color:var(--gold);">${title}</strong>에 가깝다고 보면 돼요.`);
-        }
-        if (flowPhrase) {
-            leadParts.push(`이달에는 <strong style="color:var(--text);">${flowPhrase}</strong> 경향이 자주 느껴져요. 억지로 반대로 가기보다, 이 톤에 맞춰 일정과 마음을 맞춰 보세요.`);
-        }
-        const leadHtml = leadParts.length
-            ? `<p style="font-size:0.9rem;line-height:1.78;color:#e4e0ef;margin:0 0 14px 0;word-break:keep-all;">${leadParts.join(" ")}</p>`
-            : "";
-
-        const tipHtml = tlDesc
-            ? `<p style="font-size:0.88rem;line-height:1.78;color:#c8f0e8;margin:0 0 14px 0;word-break:keep-all;"><span style="margin-right:4px;">💡</span><strong>이렇게 해 보세요.</strong> ${tlDesc}</p>`
-            : "";
-
-        const stratHtml = strat.goal
-            ? `<div style="padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
-                <div style="font-size:0.74rem;color:var(--muted);margin-bottom:8px;">이 번호에 어울리는 쓰임</div>
-                <p style="font-size:0.88rem;line-height:1.7;color:#ddd;margin:0 0 8px 0;word-break:keep-all;"><strong style="color:var(--gold);">이달의 초점</strong> — ${strat.goal}</p>
-                <p style="font-size:0.88rem;line-height:1.7;color:#ccc;margin:0;word-break:keep-all;"><strong style="color:var(--teal);">한 가지 실천</strong> — ${strat.action || "가볍게라도 몸으로 옮겨 보세요."}</p>
-            </div>`
-            : "";
-
         monthlyDetailEl.innerHTML = `<div class="monthly-detail-card">
-            <div style="font-size:1.02rem;font-weight:800;color:var(--text);margin-bottom:12px;letter-spacing:-0.02em;">${mo}월 · ${pm2}번 · ${kw}</div>
-            ${leadHtml}
-            ${tipHtml}
-            ${stratHtml}
+            <div style="font-size:0.92rem;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-0.01em;">${mo}월 · ${pm2}번 · ${kw}</div>
+            <div style="font-size:0.8rem;font-weight:500;color:var(--teal);margin-bottom:10px;letter-spacing:0.02em;opacity:0.92;">${tag}</div>
+            <p style="font-size:0.86rem;font-weight:400;line-height:1.75;color:#b8b4c8;margin:0;word-break:keep-all;">${body}</p>
         </div>`;
     };
 
@@ -780,7 +809,7 @@ function startAnalysis() {
             const kw = MONTHLY_KEYWORDS[pm2] || (MONTHLY_KEYWORDS[(pm2 % 9 === 0) ? 9 : pm2 % 9] || "흐름");
             const cls = `card monthly-cell${isCurrentMonth ? " monthly-cell-current" : ""}${mo === curM ? " monthly-cell-selected" : ""}`;
             monthlyCards.push(
-                `<div class="${cls}" style="padding:10px 2px;border:1px solid #222;" role="button" tabindex="0" data-month="${mo}" aria-label="${mo}월 ${pm2}번 ${kw}"><span style="font-size:0.65rem;color:${isCurrentMonth ? "var(--teal)" : "var(--muted)"}">${mo}월</span><strong style="font-size:1.1rem;display:block;margin:2px 0;color:var(--accent);">${pm2}</strong><span style="font-size:0.6rem;color:#ccc;">${kw}</span></div>`
+                `<div class="${cls}" style="padding:10px 2px;border:1px solid #222;" role="button" tabindex="0" data-month="${mo}" aria-label="${mo}월 ${pm2}번 ${kw}"><span style="font-size:0.65rem;color:${isCurrentMonth ? "var(--teal)" : "var(--muted)"}">${mo}월</span><span style="font-size:1.1rem;font-weight:600;display:block;margin:2px 0;color:var(--accent);">${pm2}</span><span style="font-size:0.6rem;color:#ccc;font-weight:400;">${kw}</span></div>`
             );
         }
         monthlyGrid.innerHTML = monthlyCards.join("");
@@ -800,16 +829,6 @@ function startAnalysis() {
         setMonthlySelection(curM);
     } else if (monthlyDetailEl) {
         monthlyDetailEl.innerHTML = "";
-    }
-
-    const monthlyNoteEl = document.getElementById("monthlyForecastNote");
-    if (monthlyNoteEl) {
-        monthlyNoteEl.innerHTML = `<div class="insight-box" style="margin-top:0;">
-            <p style="font-size:0.82rem;line-height:1.65;color:#ccc;margin:0;word-break:keep-all;">
-                <strong style="color:var(--teal);">초록 테두리</strong>는 지금 달, <strong style="color:var(--gold);">금색 테두리</strong>는 눌러서 본 달이에요.
-                월을 누르면 <strong>바로 아래</strong>에 그 달 숫자에 맞춘 쉬운 설명이 나옵니다.
-            </p>
-        </div>`;
     }
 
     const weeklyTableBody = document.getElementById("weeklyTableBody");
