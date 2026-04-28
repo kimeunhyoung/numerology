@@ -726,28 +726,38 @@ function startAnalysis() {
         const title = TITLE_MAP[pm2] || "";
         const flowPhrase = FLOW_PHRASE[pm2] || "";
         const tlDesc = TL_DESC[pm2] || "";
-        const deep = DEEP_MAP[pm2] || "";
         const strat = YEAR_STRATEGY[pm2] || YEAR_STRATEGY[reduceToSingle(pm2, true)] || {};
-        const monthQ = QUESTIONS["이번 달의 수"] || "";
-        const rawSum = py + mo;
-        const sumLine = `${py} + ${mo} = ${rawSum} → 환산 <strong style="color:var(--accent);">${pm2}</strong>번`;
 
         if (!monthlyDetailEl) return;
+
+        const leadParts = [];
+        if (title) {
+            leadParts.push(`이달은 <strong style="color:var(--gold);">${title}</strong>에 가깝다고 보면 돼요.`);
+        }
+        if (flowPhrase) {
+            leadParts.push(`이달에는 <strong style="color:var(--text);">${flowPhrase}</strong> 경향이 자주 느껴져요. 억지로 반대로 가기보다, 이 톤에 맞춰 일정과 마음을 맞춰 보세요.`);
+        }
+        const leadHtml = leadParts.length
+            ? `<p style="font-size:0.9rem;line-height:1.78;color:#e4e0ef;margin:0 0 14px 0;word-break:keep-all;">${leadParts.join(" ")}</p>`
+            : "";
+
+        const tipHtml = tlDesc
+            ? `<p style="font-size:0.88rem;line-height:1.78;color:#c8f0e8;margin:0 0 14px 0;word-break:keep-all;"><span style="margin-right:4px;">💡</span><strong>이렇게 해 보세요.</strong> ${tlDesc}</p>`
+            : "";
+
+        const stratHtml = strat.goal
+            ? `<div style="padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
+                <div style="font-size:0.74rem;color:var(--muted);margin-bottom:8px;">이 번호에 어울리는 쓰임</div>
+                <p style="font-size:0.88rem;line-height:1.7;color:#ddd;margin:0 0 8px 0;word-break:keep-all;"><strong style="color:var(--gold);">이달의 초점</strong> — ${strat.goal}</p>
+                <p style="font-size:0.88rem;line-height:1.7;color:#ccc;margin:0;word-break:keep-all;"><strong style="color:var(--teal);">한 가지 실천</strong> — ${strat.action || "가볍게라도 몸으로 옮겨 보세요."}</p>
+            </div>`
+            : "";
+
         monthlyDetailEl.innerHTML = `<div class="monthly-detail-card">
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:10px;line-height:1.55;">
-                <strong style="color:var(--teal);">계산 방식</strong> · ${curY}년 당신의 <strong>개인 연도 수 ${py}번</strong>에, 해당 달의 숫자(1~12)를 더한 뒤 수비학 규칙으로 한 자리 또는 마스터 숫자(11·22·33)로 줄이면 <strong>개인 월 넘버</strong>가 됩니다.<br>
-                <span style="display:block;margin-top:6px;color:#9aa;">${sumLine}</span>
-            </div>
-            <div style="font-size:0.98rem;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:-0.02em;">${mo}월 — 개인 월 ${pm2}번 · ${kw}</div>
-            ${title ? `<div style="font-size:0.84rem;color:var(--gold);margin-bottom:10px;line-height:1.45;">${title}</div>` : ""}
-            ${flowPhrase ? `<p style="font-size:0.8rem;color:#c5bde0;margin:0 0 8px 0;line-height:1.6;">이 달이 주는 공통 톤은 <strong style="color:var(--text);">${flowPhrase}</strong> 흐름에 가깝습니다. 같은 숫자라도 개인 연도·일운과 만나면 세부 느낌은 달라질 수 있으니, 아래 해석은 ‘그 달의 기본 테마’로 받아들이면 됩니다.</p>` : ""}
-            ${tlDesc ? `<p style="font-size:0.8rem;color:var(--teal);margin:0 0 12px 0;line-height:1.6;">✔ <strong>한 줄 실천:</strong> ${tlDesc}</p>` : ""}
-            ${monthQ ? `<div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">Q. ${monthQ}</div>` : ""}
-            ${deep ? `<div class="desc-content" style="font-size:0.84rem;line-height:1.68;color:#ccc;margin-bottom:12px;">${deep}</div>` : ""}
-            ${strat.goal ? `<div style="padding:10px 12px;background:rgba(163,102,255,0.08);border-radius:8px;border:1px solid rgba(163,102,255,0.25);">
-                <div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-bottom:5px;">📌 이 진동에 맞춰 이 달에 시도해 볼 것</div>
-                <div style="font-size:0.8rem;color:#ddd;line-height:1.55;"><strong style="color:var(--gold);">방향:</strong> ${strat.goal}<br><strong style="color:var(--gold);">실천:</strong> ${strat.action}</div>
-            </div>` : ""}
+            <div style="font-size:1.02rem;font-weight:800;color:var(--text);margin-bottom:12px;letter-spacing:-0.02em;">${mo}월 · ${pm2}번 · ${kw}</div>
+            ${leadHtml}
+            ${tipHtml}
+            ${stratHtml}
         </div>`;
     };
 
@@ -770,7 +780,7 @@ function startAnalysis() {
             const kw = MONTHLY_KEYWORDS[pm2] || (MONTHLY_KEYWORDS[(pm2 % 9 === 0) ? 9 : pm2 % 9] || "흐름");
             const cls = `card monthly-cell${isCurrentMonth ? " monthly-cell-current" : ""}${mo === curM ? " monthly-cell-selected" : ""}`;
             monthlyCards.push(
-                `<div class="${cls}" style="padding:10px 2px;border:1px solid #222;" role="button" tabindex="0" data-month="${mo}" aria-label="${mo}월 개인 월 ${pm2}번 ${kw}"><span style="font-size:0.65rem;color:${isCurrentMonth ? "var(--teal)" : "var(--muted)"}">${mo}월</span><strong style="font-size:1.1rem;display:block;margin:2px 0;color:var(--accent);">${pm2}</strong><span style="font-size:0.6rem;color:#ccc;">${kw}</span></div>`
+                `<div class="${cls}" style="padding:10px 2px;border:1px solid #222;" role="button" tabindex="0" data-month="${mo}" aria-label="${mo}월 ${pm2}번 ${kw}"><span style="font-size:0.65rem;color:${isCurrentMonth ? "var(--teal)" : "var(--muted)"}">${mo}월</span><strong style="font-size:1.1rem;display:block;margin:2px 0;color:var(--accent);">${pm2}</strong><span style="font-size:0.6rem;color:#ccc;">${kw}</span></div>`
             );
         }
         monthlyGrid.innerHTML = monthlyCards.join("");
@@ -794,19 +804,11 @@ function startAnalysis() {
 
     const monthlyNoteEl = document.getElementById("monthlyForecastNote");
     if (monthlyNoteEl) {
-        const staticIntro =
-            (INTERPRETATION_TEXTS && INTERPRETATION_TEXTS.monthlyForecastIntro) ||
-            "";
-        const defaultIntro = `<p style="font-size:0.8rem;line-height:1.68;color:#ccc;margin:0 0 12px 0;">
-            <strong style="color:var(--text);">개인 월 넘버</strong>는 <strong style="color:var(--accent);">${curY}년</strong>에 당신에게 해당하는 <strong>개인 연도 수 ${py}번</strong>을 기준으로, 각 달(1~12)의 숫자를 더해 구합니다.
-            수비학에서는 이 숫자를 <strong style="color:var(--teal);">그 달 전체를 관통하는 에너지의 색</strong>으로 봅니다. 카드 가운데 큰 숫자가 개인 월 넘버, 맨 아래 짧은 단어는 그 기운을 요약한 키워드입니다.
-        </p>
-        <p style="font-size:0.8rem;line-height:1.68;color:#bbb;margin:0 0 12px 0;">
-            달력상 <strong style="color:var(--teal);">이번 달</strong> 칸은 초록 테두리로 표시됩니다. <strong style="color:var(--gold);">눌러서 고른 달</strong>은 금색 테두리로 바뀌며, <strong>바로 아래</strong>에 그 달의 상세 해석·실천 팁이 펼쳐집니다. 다른 달을 눌러 올해 흐름을 월별로 비교해 보세요.
-        </p>`;
         monthlyNoteEl.innerHTML = `<div class="insight-box" style="margin-top:0;">
-            ${staticIntro || defaultIntro}
-            <p style="font-size:0.78rem;line-height:1.6;color:var(--muted);margin:0;"><strong style="color:var(--gold);">💡</strong> 월 칸을 탭하면 하단에 긴 설명이 나옵니다.</p>
+            <p style="font-size:0.82rem;line-height:1.65;color:#ccc;margin:0;word-break:keep-all;">
+                <strong style="color:var(--teal);">초록 테두리</strong>는 지금 달, <strong style="color:var(--gold);">금색 테두리</strong>는 눌러서 본 달이에요.
+                월을 누르면 <strong>바로 아래</strong>에 그 달 숫자에 맞춘 쉬운 설명이 나옵니다.
+            </p>
         </div>`;
     }
 
