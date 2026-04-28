@@ -1,4 +1,4 @@
-const CACHE_NAME = "lifecode-cache-v7";
+const CACHE_NAME = "lifecode-cache-v8";
 
 /** 오프라인 첫 실행용 — 이후에는 fetch 핸들러가 네트워크 우선으로 갱신 */
 const PRECACHE_URLS = [

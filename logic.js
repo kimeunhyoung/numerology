@@ -730,6 +730,21 @@ function startAnalysis() {
         monthlyGrid.innerHTML = monthlyCards.join("");
     }
 
+    const monthlyNoteEl = document.getElementById("monthlyForecastNote");
+    if (monthlyNoteEl) {
+        const pmTitle = TITLE_MAP[pm] || "";
+        const pmHint = TL_DESC[pm] || FLOW_PHRASE[pm] || "";
+        const staticIntro =
+            (INTERPRETATION_TEXTS && INTERPRETATION_TEXTS.monthlyForecastIntro) ||
+            `위 표는 <strong style="color:var(--text);">${curY}년</strong>의 개인 연도 수 <strong style="color:var(--accent);">${py}번</strong>에 각 달(1~12월) 숫자를 더해 환산한 <strong style="color:var(--teal);">개인 월 넘버</strong>입니다. 큰 숫자는 그 달의 진동 수, 아래 짧은 글자는 그 기운을 한눈에 짚은 키워드입니다.`;
+        monthlyNoteEl.innerHTML = `<div class="insight-box" style="margin-top:0;">
+            <p style="font-size:0.8rem;line-height:1.6;color:#ccc;margin:0 0 12px 0;">${staticIntro}</p>
+            <p style="font-size:0.8rem;line-height:1.6;color:#ccc;margin:0;">
+                <strong style="color:var(--gold);">📍 이번 달 (${curM}월)</strong> — 개인 월 <strong style="color:var(--accent);">${pm}번</strong>${pmTitle ? ` · ${pmTitle}` : ""}${pmHint ? `<br><span style="color:var(--muted);">${pmHint}</span>` : ""}
+            </p>
+        </div>`;
+    }
+
     const weeklyTableBody = document.getElementById("weeklyTableBody");
     if (weeklyTableBody) {
         const weekRows = [];
