@@ -784,7 +784,7 @@ function startAnalysis() {
         if (!monthlyDetailEl) return;
 
         monthlyDetailEl.innerHTML = `<div class="monthly-detail-card">
-            <div style="font-size:0.93rem;font-weight:600;color:var(--text);margin-bottom:7px;letter-spacing:-0.01em;">${mo}월 · ${pm2}번 · ${kw}</div>
+            <div style="font-size:0.93rem;font-weight:600;color:var(--gold-soft);margin-bottom:7px;letter-spacing:-0.01em;">${mo}월 · ${pm2}번 · ${kw}</div>
             <div style="font-size:0.81rem;font-weight:500;color:var(--teal);margin-bottom:11px;letter-spacing:0.02em;opacity:0.96;">${tag}</div>
             <p style="font-size:0.87rem;font-weight:500;line-height:1.86;color:#d2cee4;margin:0;word-break:keep-all;letter-spacing:0.005em;">${body}</p>
         </div>`;
